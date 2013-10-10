@@ -1,0 +1,25 @@
+{
+  "require": {
+    "slim/slim":"2.*",
+    "ircmaxell/password-compat":"1.0.0",
+    "behat/behat":"2.4.*@stable",
+    "behat/mink":"1.4@stable",
+    "behat/mink-extension":"*",
+    "behat/mink-goutte-driver":"*",
+    "behat/mink-selenium-driver":"*"
+  },
+  "require-dev": {
+    "whatthejeff/nyancat-phpunit-resultprinter":"~1.1",
+    "phpunit/phpunit":"3.7.*",
+    "phpunit/php-invoker":"1.1.*"
+  },
+  "autoload": {
+    "psr-0": {
+      "Slim":"vendor/slim/slim/Slim/"
+    }
+  },
+  "minimum-stability":"dev",
+  "config": {
+    "bin-dir":"bin/"
+  }
+}
