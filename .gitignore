@@ -7,3 +7,5 @@ extras/documentation
 vagrant-mentor-app-php5.4/.vagrant/
 vagrant-mentor-app-php5.5/.vagrant/
 .idea/
+www/vendor
+www/composer.lock
