@@ -9,11 +9,17 @@
     "behat/mink-selenium-driver":"*"
   },
   "require-dev": {
-    "whatthejeff/nyancat-phpunit-resultprinter":"~1.1"
+    "whatthejeff/nyancat-phpunit-resultprinter":"~1.1",
+    "phpunit/phpunit":"3.7.*",
+    "phpunit/php-invoker":"1.1.*"
   },
   "autoload": {
     "psr-0": {
       "Slim":"vendor/slim/slim/Slim/"
     }
+  },
+  "minimum-stability":"dev",
+  "config": {
+    "bin-dir":"bin/"
   }
 }

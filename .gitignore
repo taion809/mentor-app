@@ -9,3 +9,4 @@ vagrant-mentor-app-php5.5/.vagrant/
 .idea/
 www/vendor
 www/composer.lock
+www/bin
