@@ -31,3 +31,23 @@ $ vagrant halt
 When you are finished forever, you can completely destroy the machine by running:
 
 $ vagrant destroy
+
+Database Migration
+==================
+
+In order to keep control of the database we use a system called Phinx.
+Full documentation can be found at: http://docs.phinx.org/en/latest/
+
+To create a change from the /var/www directory run the following command:
+
+$ bin/phinx create <Name for migration>
+
+To check the status (what's not been run yet, etc) run the following command:
+
+$ bin/phinx status -e development
+
+To apply outstanding migrations run the following:
+
+$ bin/phinx migrate -e development
+
+If you don't specify the "-e development" then it will default to development with a warning.
