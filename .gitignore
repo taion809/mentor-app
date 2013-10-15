@@ -1,12 +1,6 @@
-INSTALL.txt
-LICENSE.txt
-README.txt
-demos/
-extras/documentation
 .DS_Store
 vagrant-mentor-app-php5.4/.vagrant/
-vagrant-mentor-app-php5.5/.vagrant/
 .idea/
-vendor/
-composer.lock
-bin/
+www/composer/vendor/
+www/composer/composer.lock
+www/composer/bin/

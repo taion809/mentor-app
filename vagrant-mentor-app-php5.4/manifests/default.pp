@@ -40,7 +40,7 @@ apache::vhost { 'mentorapp.dev':
   server_name   => 'mentorapp.dev',
   serveraliases => [
 ],
-  docroot       => '/var/www/',
+  docroot       => '/var/www/public/',
   port          => '80',
   env_variables => [
     'APP_ENV dev'
