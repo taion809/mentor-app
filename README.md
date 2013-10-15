@@ -15,7 +15,7 @@ $ vagrant up
 This will start the vagrant instance for you. You can have both running at the same time without any issues. To access
 the web server on either you will need to open your browser and go to:
 
-http://localhost:8080/public/
+http://localhost:8080/
 OR
 http://mentorapp.dev:8080/
 
