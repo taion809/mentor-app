@@ -1,6 +1,6 @@
 .DS_Store
 vagrant-mentor-app-php5.4/.vagrant/
 .idea/
-site/composer/vendor/
-site/composer/composer.lock
-site/composer/bin/
+site/vendor/
+site/composer.lock
+site/bin/
