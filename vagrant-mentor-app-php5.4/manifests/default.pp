@@ -36,16 +36,16 @@ apache::dotconf { 'custom':
 
 apache::module { 'rewrite': }
 
-apache::vhost { 'mentorapp.dev':
-  server_name   => 'mentorapp.dev',
-  serveraliases => [
+apache::vhost { 'default':
+  server_name   => false,
+  serveraliases => ['mentorapp.dev'
 ],
-  docroot       => '/var/www/',
+  docroot       => '/var/www/public/',
   port          => '80',
   env_variables => [
     'APP_ENV dev'
   ],
-  priority      => '1',
+  priority      => '',
 }
 
 class { 'php':
