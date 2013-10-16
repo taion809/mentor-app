@@ -2,5 +2,4 @@
 vagrant-mentor-app-php5.4/.vagrant/
 .idea/
 site/vendor/
-site/composer.lock
 site/bin/
