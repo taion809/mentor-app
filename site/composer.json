@@ -17,7 +17,7 @@
   "autoload": {
     "psr-0": {
       "Slim":"vendor/slim/slim/Slim/",
-      "MentorApp": "./src/MentorApp"
+      "": "./src"
     }
   },
   "minimum-stability":"dev",
