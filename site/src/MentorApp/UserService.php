@@ -49,8 +49,8 @@ class UserService
         if ($user->id == null || $user->id === "") {
             return $user;
         }
-        
-        $user_fields = implode(', ',get_object_vars($user));
+        $user_vars = get_object_vars($user); 
+        $user_fields = implode(', ',array_keys($user_vars));
         $query = 'SELECT ' . $user_fields . ' FROM ' . $this->user_table;
         $query .= ' WHERE id = :id';
         $statement = $this->db->prepare($query);
