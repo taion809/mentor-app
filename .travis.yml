@@ -1,4 +1,7 @@
 language: php
 php:
   - "5.4"
-script: phpunit -c site/phpunit.xml.dist tests
+before_script:
+   - "composer self-update"
+   - "cd site"
+script: phpunit tests
