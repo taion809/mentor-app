@@ -78,5 +78,4 @@ class User
     public function __set($name, $value)
     {
     }
-
 }
