@@ -26,6 +26,23 @@ class UserService
     protected $user_table;
 
     /**
+     * @var array mapping mapping of User properties to database fields
+     */
+    protected $mapping = array(
+        'id' => 'id',
+        'firstName' => 'first_name',
+        'lastName' => 'last_name',
+        'email' => 'email',
+        'ircNick' => 'irc_nick',
+        'twitterHandle' => 'twitter_handle',
+        'mentorAvailble' => 'mentor_available',
+        'apprenticeAvailable' => 'apprentice_available',
+        'teachingSkills' => 'teaching_skills',
+        'learningSkills' => 'learning_skills',
+        'timezone' => 'timezone'
+    );
+
+    /**
      * Constructor where the db and user instance are injected for testability
      *
      * @param \PDO db PDO instance
@@ -49,16 +66,25 @@ class UserService
         if ($user->id == null || $user->id === "") {
             return $user;
         }
-        $user_vars = get_object_vars($user); 
-        $user_fields = implode(', ',array_keys($user_vars));
+        $user_fields = implode(', ', $this->mapping);
         $query = 'SELECT ' . $user_fields . ' FROM ' . $this->user_table;
         $query .= ' WHERE id = :id';
         $statement = $this->db->prepare($query);
         $statement->execute(array('id' => $user->id));
         $values = $statement->fetch();
-        foreach ($values as $key => $value) {
-            $user->$key = htmlentities($value);
+        foreach ($this->mapping as $key => $value) {
+            $user->$key = htmlentities($values[$value]);
         }
         return $user;
+    }
+
+    /**
+     * Method to override the default mapping array
+     *
+     * @var array mapping mapping array
+     */
+    public function setMapping(Array $mapping)
+    {
+        $this->mapping = $mapping;
     }
 }

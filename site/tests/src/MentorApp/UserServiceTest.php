@@ -76,7 +76,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals(
             $mockData['first_name'],
-            $returnedUser->first_name,
+            $returnedUser->firstName,
             'First name was not the same'
         );        
     }

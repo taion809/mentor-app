@@ -19,14 +19,14 @@ class User
     public $id;
 
     /**
-     * @var string first_name first name of the user
+     * @var string firstName first name of the user
      */
-    public $first_name;
+    public $firstName;
 
     /**
-     * @var string last_name last name of the user
+     * @var string lastName last name of the user
      */
-    public $last_name;
+    public $lastName;
 
     /**
      * @var string email email address for the user
@@ -34,34 +34,34 @@ class User
     public $email;
 
     /**
-     * @var string irc_nick irc nickname for the user
+     * @var string ircNick irc nickname for the user
      */
-    public $irc_nick;
+    public $ircNick;
 
     /**
-     * @var string twitter_handle twitter hanle for the user
+     * @var string twitterHandle twitter hanle for the user
      */
-    public $twitter_handle;
+    public $twitterHandle;
 
     /**
-     * @var boolean mentor_available indicates whether user is accepting apprentices
+     * @var boolean mentorAvailable indicates whether user is accepting apprentices
      */
-    public $mentor_available;
+    public $mentorAvailable;
 
     /**
-     * @var boolean apprentice_available indicates whether user is seeking a mentor
+     * @var boolean apprenticeAvailable indicates whether user is seeking a mentor
      */
-    public $apprentice_available;
+    public $apprenticeAvailable;
 
     /**
-     * @var array teaching_skills an array of skills a user feels comfortable teaching
+     * @var array teachingSkills an array of skills a user feels comfortable teaching
      */
-    public $teaching_skills = array();
+    public $teachingSkills = array();
 
     /**
-     * @var array learning_skills an array of skills a user wants to learn
+     * @var array learningSkills an array of skills a user wants to learn
      */
-    public $learning_skills = array();
+    public $learningSkills = array();
 
     /**
      * @var string timezone the time zone of the user
