@@ -6,4 +6,4 @@
  */
 
 // Defines the environment for the system to use
-$config['environment'] = 'development';
+$config['environment'] = getenv('APP_ENV') ?: 'development';
