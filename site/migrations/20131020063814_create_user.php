@@ -40,8 +40,8 @@ class CreateUser extends AbstractMigration
 
         $this->query('
             create table `teaching_skills` (
-                `id_user` int unsigned not null,
-                `id_tag`  int unsigned not null,
+                `id_user` varchar(255) not null,
+                `id_tag`  varchar(255) not null,
 
                 primary key (`id_user`, `id_tag`)
             )
@@ -49,8 +49,8 @@ class CreateUser extends AbstractMigration
 
         $this->query('
             create table `learning_skills` (
-                `id_user` int unsigned not null,
-                `id_tag`  int unsigned not null,
+                `id_user` varchar(255) not null,
+                `id_tag`  varchar(255) not null,
 
                 primary key (`id_user`, `id_tag`)
             )
