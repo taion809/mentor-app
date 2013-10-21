@@ -21,9 +21,9 @@ class UserService
     protected $db;
 
     /**
-     * @var string user_table name of the user table
+     * @var string userTable name of the user table
      */
-    protected $user_table;
+    protected $userTable;
 
     /**
      * @var array mapping mapping of User properties to database fields
@@ -35,7 +35,7 @@ class UserService
         'email' => 'email',
         'ircNick' => 'irc_nick',
         'twitterHandle' => 'twitter_handle',
-        'mentorAvailble' => 'mentor_available',
+        'mentorAvailable' => 'mentor_available',
         'apprenticeAvailable' => 'apprentice_available',
         'teachingSkills' => 'teaching_skills',
         'learningSkills' => 'learning_skills',
@@ -47,10 +47,10 @@ class UserService
      *
      * @param \PDO db PDO instance
      */
-    public function __construct(\PDO $db, $user_table = 'user')
+    public function __construct(\PDO $db, $userTable = 'user')
     {
         $this->db = $db;
-        $this->user_table = $user_table;
+        $this->userTable = $userTable;
     }
 
     /**
@@ -67,15 +67,48 @@ class UserService
             return $user;
         }
         $user_fields = implode(', ', $this->mapping);
-        $query = 'SELECT ' . $user_fields . ' FROM ' . $this->user_table;
+        $query = 'SELECT ' . $user_fields . ' FROM ' . $this->userTable;
         $query .= ' WHERE id = :id';
-        $statement = $this->db->prepare($query);
-        $statement->execute(array('id' => $user->id));
-        $values = $statement->fetch();
+        try {
+            $statement = $this->db->prepare($query);
+            $statement->execute(array('id' => $user->id));
+            $values = $statement->fetch();
+        } catch(\PDOException $e) {
+            // log the error
+            return $user;
+        }
         foreach ($this->mapping as $key => $value) {
             $user->$key = htmlentities($values[$value]);
         }
         return $user;
+    }
+
+    /**
+     * Save the User record, a fully populate user instance should be 
+     * passed in and acted upon by the service. 
+     *
+     * @todo Create a check for the ID pattern match
+     * @param \MentorApp\User user user instance
+     * @return boolean indication of whether the user was saved correctly
+     */
+    public function create(\MentorApp\User $user)
+    {
+        $fields = implode(', ', $this->mapping);
+        $valueKeys = '';
+        $statementValues = array();
+        foreach($this->mapping as $key => $field) {
+            $valueKeys .= ':' . $field . ', ';
+            $statementValues[$field] = $user->$key;
+        }
+        $query = 'INSERT INTO '. $this->userTable . ' (' . $fields . ') VALUES (' . substr($valueKeys, 0, -2) . ')';
+        try {
+            $statement = $this->db->prepare($query);
+            $statement->execute($statementValues);
+        } catch(\PDOException $e) {
+            // log errors
+           return false; 
+        }
+        return true;
     }
 
     /**

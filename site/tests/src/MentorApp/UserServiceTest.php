@@ -80,4 +80,94 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             'First name was not the same'
         );        
     }
+
+    /**
+     * Test to ensure the user object is returned when PDO throws an exception
+     */
+    public function testGetUserWhenPDOThrowsException()
+    {
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->will($this->throwException(new \PDOException));
+        $user = new User();
+        $user->id = 'bbccdd1134';
+        $userService = new UserService($this->db);
+        $retrievedUser = $userService->retrieve($user);
+        $this->assertSame($user, $retrievedUser);
+    }
+
+    /**
+     * Test to ensure that a new user can be created by the user service
+     */
+    public function testEnsureUserIsCreated()
+    {
+        $expectedQuery = 'INSERT INTO user (id, first_name, last_name, email, ';
+        $expectedQuery .= 'irc_nick, twitter_handle, mentor_available, ';
+        $expectedQuery .= 'apprentice_available, teaching_skills, learning_skills, ';
+        $expectedQuery .= 'timezone) VALUES (:id, :first_name, :last_name, :email, ';
+        $expectedQuery .= ':irc_nick, :twitter_handle, :mentor_available, ';
+        $expectedQuery .= ':apprentice_available, :teaching_skills, :learning_skills, ';
+        $expectedQuery .= ':timezone)';
+        $user = new User();
+        $user->id = '1932abed12';
+        $user->firstName = 'Test';
+        $user->lastName = 'User';
+        $user->email = 'test.user@gmail.com';
+        $user->ircNick = 'testUser';
+        $user->twitterHandle = '@testUser';
+        $user->mentor_available = true;
+        $user->apprentice_available = false;
+        $user->teaching_skills = 'OOP, TDD';
+        $user->learning_skills = '';
+        $user->timezone = 'America/Chicago';
+        $statementParams = array(
+            'id' => $user->id,
+            'first_name' => $user->firstName,
+            'last_name' => $user->lastName,
+            'email' => $user->email,
+            'irc_nick' => $user->ircNick,
+            'twitter_handle' => $user->twitterHandle,
+            'mentor_available' => $user->mentorAvailable,
+            'apprentice_available' => $user->apprenticeAvailable,
+            'teaching_skills' => $user->teachingSkills,
+            'learning_skills' => $user->learningSkills,
+            'timezone' => $user->timezone
+        );
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->with($expectedQuery)
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->once())
+            ->method('execute')
+            ->with($statementParams)
+            ->will($this->returnValue($this->statement));
+        $userService = new UserService($this->db);
+        $savedUser = $userService->create($user);
+        $this->assertTrue($savedUser);
+    }
+
+    /**
+     * Test to ensure that PDOException causes the UserService::create to return false
+     */
+    public function testPDOExceptionCausesServiceToReturnFalse()
+    {
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->will($this->throwException(new \PDOException));
+        $user = new User();
+        $user->id = '123abcde45';
+        $user->firstName = 'Test';
+        $user->lastName = 'User';
+        $user->email = 'test.user@gmail.com';
+        $user->ircNick = 'testUser';
+        $user->twitterHandle = '@testUser';
+        $user->mentorAvailable = true;
+        $user->apprenticeAvailable = false;
+        $user->teachingSkills = 'OOP';
+        $user->learningSkills = '';
+        $user->timezone = 'America/Chicago';
+        $userService = new UserService($this->db);
+        $result = $userService->create($user);
+        $this->assertFalse($result);
+    }
 }
