@@ -21,11 +21,6 @@ class UserService
     protected $db;
 
     /**
-     * @var string userTable name of the user table
-     */
-    protected $userTable;
-
-    /**
      * @var array mapping mapping of User properties to database fields
      */
     protected $mapping = array(
@@ -47,10 +42,9 @@ class UserService
      *
      * @param \PDO db PDO instance
      */
-    public function __construct(\PDO $db, $userTable = 'user')
+    public function __construct(\PDO $db)
     {
         $this->db = $db;
-        $this->userTable = $userTable;
     }
 
     /**
@@ -67,8 +61,8 @@ class UserService
             return $user;
         }
         $user_fields = implode(', ', $this->mapping);
-        $query = 'SELECT ' . $user_fields . ' FROM ' . $this->userTable;
-        $query .= ' WHERE id = :id';
+        $query = 'SELECT ' . $user_fields . ' FROM user ';  
+        $query .= 'WHERE id = :id';
         try {
             $statement = $this->db->prepare($query);
             $statement->execute(array('id' => $user->id));
@@ -88,6 +82,7 @@ class UserService
      * passed in and acted upon by the service. 
      *
      * @todo Create a check for the ID pattern match
+     * @todo Interact with the relational table for tags/skills
      * @param \MentorApp\User user user instance
      * @return boolean indication of whether the user was saved correctly
      */
@@ -100,7 +95,7 @@ class UserService
             $valueKeys .= ':' . $field . ', ';
             $statementValues[$field] = $user->$key;
         }
-        $query = 'INSERT INTO '. $this->userTable . ' (' . $fields . ') VALUES (' . substr($valueKeys, 0, -2) . ')';
+        $query = 'INSERT INTO user (' . $fields . ') VALUES (' . substr($valueKeys, 0, -2) . ')';
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($statementValues);
