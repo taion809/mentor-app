@@ -73,7 +73,7 @@ class UserService
             $statement = $this->db->prepare($query);
             $statement->execute(array('id' => $user->id));
             $values = $statement->fetch();
-        } catch(\PDOException $e) {
+        } catch (\PDOException $e) {
             // log the error
             return $user;
         }
@@ -96,7 +96,7 @@ class UserService
         $fields = implode(', ', $this->mapping);
         $valueKeys = '';
         $statementValues = array();
-        foreach($this->mapping as $key => $field) {
+        foreach ($this->mapping as $key => $field) {
             $valueKeys .= ':' . $field . ', ';
             $statementValues[$field] = $user->$key;
         }
@@ -104,9 +104,9 @@ class UserService
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($statementValues);
-        } catch(\PDOException $e) {
+        } catch (\PDOException $e) {
             // log errors
-           return false; 
+            return false;
         }
         return true;
     }
