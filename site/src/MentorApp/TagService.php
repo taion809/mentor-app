@@ -20,18 +20,16 @@ class TagService
     /**
      * @var string $tag_table The name of the table for tags
      */
-    protected $tag_table;
+    protected $tag_table = 'tag';
 
     /**
      * The standard constructor
      *
      * @param \PDO $db The data store connection
-     * @param string $tag_table The name of the table to use
      */
-    public function __construct(\PDO $db, $tag_table = 'tag')
+    public function __construct(\PDO $db)
     {
-        $this->db        = $db;
-        $this->tag_table = $tag_table;
+        $this->db = $db;
     }
 
     /**
