@@ -18,11 +18,6 @@ class TagService
     protected $db;
 
     /**
-     * @var string $tag_table The name of the table for tags
-     */
-    protected $tag_table = 'tag';
-
-    /**
      * The standard constructor
      *
      * @param \PDO $db The data store connection
@@ -44,7 +39,7 @@ class TagService
         if (empty($tag->name)) {
             throw new \InvalidArgumentException('Supplied tag does not have a name set');
         }
-        $query = 'select * from ' . $this->tag_table . ' where name = :name';
+        $query = 'select * from `tag` where `name` = :name';
         $stmt = $this->db->prepare($query);
         $stmt->execute([':name' => $tag->name]);
         if (!$stmt->rowCount()) {
@@ -70,7 +65,7 @@ class TagService
         if (empty($term)) {
             throw new \InvalidArgumentException('No search term supplied');
         }
-        $query = 'select * from ' . $this->tag_table . ' where tag like "%:term%"';
+        $query = 'select * from `tag` where `name` like "%:term%"';
         $stmt = $this->db->prepare($query);
         $stmt->execute([':term' => $term]);
         if (!$stmt->rowCount()) {
@@ -105,16 +100,16 @@ class TagService
         $authorized = $tag->authorized?1:0;
         $added = $tag->added->format('Y-m-d H:i:s');
 
-        $query = 'insert into ' . $this->tag_table .' (
-            name,
-            authorized,
-            added
+        $query = 'insert into `tag` (
+            `name`,
+            `authorized`,
+            `added`
         ) values (
             :name,
             :authorized,
             :added
         ) on duplicate key update
-            authorized = :authorized
+            `authorized` = :authorized
         ';
 
         $stmt = $this->db->prepare($query);
