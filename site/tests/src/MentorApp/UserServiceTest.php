@@ -8,7 +8,17 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->db = $this->getMock('\PDOTestHelper', array('prepare'));
-        $this->statement = $this->getMock('\PDOStatement', array('execute', 'fetch'));
+        $this->statement = $this->getMock('\PDOStatement', array('execute', 'fetch', 'fetchAll'));
+        $this->mockData = array();
+        $this->mockData['id'] = '';
+        $this->mockData['first_name'] = 'Test';
+        $this->mockData['last_name'] = 'User';
+        $this->mockData['email'] = 'testuser@gmail.com';
+        $this->mockData['irc_nick'] = 'testuser';
+        $this->mockData['twitter_handle'] = '@testuser';
+        $this->mockData['mentor_available'] = true;
+        $this->mockData['apprentice_available'] = false;
+        $this->mockData['timezone'] = 'America/Chicago';
     }
 
     /**
@@ -18,18 +28,18 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     {
         unset($this->db);
         unset($this->statement);
+        unset($this->mockData);
     }
 
     /**
-     * Ensure that a User object with no id property set, will return the same
-     * User object
+     * Ensure that an empty string paramenter will return null from the user service
      */
-    public function testUserWithNoIDReturnsEmptyUser()
+    public function testUserWithNoIDReturnsNull()
     {
-        $user = new User();
+        $id = '';
         $userService = new UserService($this->db);
-        $returnedUser = $userService->retrieve($user);
-        $this->assertSame($user, $returnedUser, 'Returned object not the same');
+        $returnedUser = $userService->retrieve($id);
+        $this->assertNull($returnedUser, "Did not return a null");
     }
 
     /**
@@ -38,62 +48,67 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testUserWithIdReturnsPopulatedUser()
     {
-        $user = new User();
-        $user->id = 'abc123def4';
+        $id = 'abc123def4';
+        $this->mockData['id'] = $id;
         $expectedQuery = "SELECT id, first_name, last_name, email, irc_nick, ";
         $expectedQuery .= "twitter_handle, mentor_available, apprentice_available, ";
-        $expectedQuery .= "teaching_skills, learning_skills, timezone FROM user WHERE id = :id";
-        $mockData = array(
-            'id' => $user->id,
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'testuser@gmail.com',
-            'irc_nick' => 'testuser',
-            'twitter_handle' => 'testuser',
-            'mentor_available' => true,
-            'apprentice_available' => false,
-            'teaching_skills' => 'php, oop, mysql, testing',
-            'learning_skills' => 'tdd',
-            'timezone' => 'America/Chicago',
-        );
-        $this->db->expects($this->once())
+        $expectedQuery .= "timezone FROM user WHERE id = :id";
+        $teachingQuery = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
+        $learningQuery = 'SELECT id_tag FROM learning_skills WHERE id_user = :id';
+
+        $this->db->expects($this->at(0))
             ->method('prepare')
             ->with($expectedQuery)
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
-            ->method('execute')
-            ->with(array('id' => $user->id))
+
+        $this->db->expects($this->at(1))
+            ->method('prepare')
+            ->with($teachingQuery)
             ->will($this->returnValue($this->statement));
+
+        $this->db->expects($this->at(2))
+            ->method('prepare')
+            ->with($learningQuery)
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->exactly(3))
+            ->method('execute')
+            ->with(array('id' => $id))
+            ->will($this->returnValue($this->statement));
+
         $this->statement->expects($this->once())
             ->method('fetch')
-            ->will($this->returnValue($mockData));
+            ->will($this->returnValue($this->mockData));
+
+        $this->statement->expects($this->exactly(2))
+            ->method('fetchAll');
+
         $userService = new UserService($this->db);
-        $returnedUser = $userService->retrieve($user);
+        $returnedUser = $userService->retrieve($id);
         $this->assertEquals(
-            $mockData['id'],
+            $this->mockData['id'],
             $returnedUser->id,
             'ID was not the same'
         );
         $this->assertEquals(
-            $mockData['first_name'],
+            $this->mockData['first_name'],
             $returnedUser->firstName,
             'First name was not the same'
         );        
     }
 
     /**
-     * Test to ensure the user object is returned when PDO throws an exception
+     * Test to ensure null is returned when PDO throws an exception
      */
     public function testGetUserWhenPDOThrowsException()
     {
         $this->db->expects($this->once())
             ->method('prepare')
             ->will($this->throwException(new \PDOException));
-        $user = new User();
-        $user->id = 'bbccdd1134';
+        $id = 'bbccdd1134';
         $userService = new UserService($this->db);
-        $retrievedUser = $userService->retrieve($user);
-        $this->assertSame($user, $retrievedUser);
+        $retrievedUser = $userService->retrieve($id);
+        $this->assertNull($retrievedUser); 
     }
 
     /**
@@ -103,11 +118,12 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     {
         $expectedQuery = 'INSERT INTO user (id, first_name, last_name, email, ';
         $expectedQuery .= 'irc_nick, twitter_handle, mentor_available, ';
-        $expectedQuery .= 'apprentice_available, teaching_skills, learning_skills, ';
+        $expectedQuery .= 'apprentice_available, ';
         $expectedQuery .= 'timezone) VALUES (:id, :first_name, :last_name, :email, ';
         $expectedQuery .= ':irc_nick, :twitter_handle, :mentor_available, ';
-        $expectedQuery .= ':apprentice_available, :teaching_skills, :learning_skills, ';
-        $expectedQuery .= ':timezone)';
+        $expectedQuery .= ':apprentice_available, :timezone)';
+        $teachingQuery = 'INSERT INTO teaching_skills (id_user, id_tag) VALUES (:user, :tag)';
+        $learningQuery = 'INSERT INTO learning_skills (id_user, id_tag) VALUES (:user, :tag)';
         $user = new User();
         $user->id = '1932abed12';
         $user->firstName = 'Test';
@@ -117,8 +133,6 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $user->twitterHandle = '@testUser';
         $user->mentor_available = true;
         $user->apprentice_available = false;
-        $user->teaching_skills = 'OOP, TDD';
-        $user->learning_skills = '';
         $user->timezone = 'America/Chicago';
         $statementParams = array(
             'id' => $user->id,
@@ -129,14 +143,24 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             'twitter_handle' => $user->twitterHandle,
             'mentor_available' => $user->mentorAvailable,
             'apprentice_available' => $user->apprenticeAvailable,
-            'teaching_skills' => $user->teachingSkills,
-            'learning_skills' => $user->learningSkills,
-            'timezone' => $user->timezone
+            'timezone' => $user->timezone,
         );
-        $this->db->expects($this->once())
+
+        $this->db->expects($this->at(0))
             ->method('prepare')
             ->with($expectedQuery)
             ->will($this->returnValue($this->statement));
+
+        $this->db->expects($this->at(1))
+            ->method('prepare')
+            ->with($teachingQuery)
+            ->will($this->returnValue($this->statement));
+
+        $this->db->expects($this->at(2))
+            ->method('prepare')
+            ->with($learningQuery)
+            ->will($this->returnValue($this->statement));
+
         $this->statement->expects($this->once())
             ->method('execute')
             ->with($statementParams)

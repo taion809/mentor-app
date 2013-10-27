@@ -69,6 +69,26 @@ class User
     public $timezone;
 
     /**
+     * Method to populate the array of teaching skills for the User
+     *
+     * @param \MentorApp\Tag tag A tag instance representing a single skill
+     */
+    public function addTeachingSkill(\MentorApp\Tag $tag)
+    {
+        $this->teachingSkills[] = $tag;
+    }
+
+    /**
+     * Method to populate the array of learning skills for the User
+     *
+     * @param \MentorApp\Tag tag A tag instance representing a single skill
+     */
+    public function addLearningSkill(\MentorApp\Tag $tag)
+    {
+        $this->learningSkills[] = $tag;
+    }
+
+    /**
      * __set magic method to prevent additional properties from being set
      * this will override the default behavior of creating a new property
      *

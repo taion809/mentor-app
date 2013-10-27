@@ -28,4 +28,8 @@ class UserTest extends \PHPUnit_Framework_TestCase
             'A property was arbitrarily set on the User DAO'
         );
     }
+
+    /**
+     * Test to ensure that addTeaching 
+     */
 } 

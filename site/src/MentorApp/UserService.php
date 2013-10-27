@@ -32,8 +32,6 @@ class UserService
         'twitterHandle' => 'twitter_handle',
         'mentorAvailable' => 'mentor_available',
         'apprenticeAvailable' => 'apprentice_available',
-        'teachingSkills' => 'teaching_skills',
-        'learningSkills' => 'learning_skills',
         'timezone' => 'timezone'
     );
 
@@ -51,29 +49,40 @@ class UserService
      * Retrieve method to pull user information from the database and return a
      * the User instance populated with the correct information
      *
-     * @param \MentorApp\User user user instance with the id property set
+     * @param string id ID to search for and retrieve
      * @return \MentorApp\User user instance populated with the rest of the
      * data
      */
-    public function retrieve(\MentorApp\User $user)
+    public function retrieve($id)
     {
-        if ($user->id == null || $user->id === "") {
-            return $user;
+        if (!is_string($id) || $id == '') {
+            return null;
         }
         $user_fields = implode(', ', $this->mapping);
         $query = 'SELECT ' . $user_fields . ' FROM user ';  
         $query .= 'WHERE id = :id';
+        $teachingTagQuery = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
+        $learningTagQuery = 'SELECT id_tag FROM learning_skills WHERE id_user = :id';
         try {
             $statement = $this->db->prepare($query);
-            $statement->execute(array('id' => $user->id));
+            $teachingStatement = $this->db->prepare($teachingTagQuery);
+            $learningStatement = $this->db->prepare($learningTagQuery);
+            $statement->execute(array('id' => $id));
+            $teachingStatement->execute(array('id' => $id));
+            $learningStatement->execute(array('id' => $id));
             $values = $statement->fetch();
+            $teachingSkills = $teachingStatement->fetchAll();
+            $learningSkills = $learningStatement->fetchAll();
         } catch (\PDOException $e) {
             // log the error
-            return $user;
+            return null;
         }
+        $user = new User();
         foreach ($this->mapping as $key => $value) {
             $user->$key = htmlentities($values[$value]);
         }
+        $user->teachingSkills = $teachingSkills;
+        $user->learningSkills = $learningSkills;
         return $user;
     }
 
@@ -99,12 +108,39 @@ class UserService
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($statementValues);
+            $this->saveTags($user->id, $user->teachingSkills);
+            $this->saveTags($user->id, $user->learningSkills, 'learning');
         } catch (\PDOException $e) {
             // log errors
             return false;
         }
         return true;
     }
+
+    /**
+     * Method to handle the saving of skills to a specific user
+     *
+     * @param string user_id id of the user
+     * @param array tags an array of tag instances to attach to the user
+     * @param string type the type of skills to be saved 
+     */
+    private function saveTags($user_id, Array $tags, $type="teaching")
+    {
+        if ($type !== "teaching" && $type !== "learning") {
+            return false;
+        } 
+        $table = $type . "_skills";
+        $query = "INSERT INTO $table (id_user, id_tag) VALUES (:user, :tag)";
+        $statement = $this->db->prepare($query);
+        foreach ($tags as $tag) {
+            try {
+                $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
+            } catch (\PDOException $e) {
+                // log it 
+                // maybe rethrow it and catch it in the create/update methods?
+            }
+        }
+    } 
 
     /**
      * Method to override the default mapping array
