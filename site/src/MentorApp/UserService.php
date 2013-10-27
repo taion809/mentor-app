@@ -118,6 +118,41 @@ class UserService
     }
 
     /**
+     * Update method which will update the information for a user profile,
+     * this will allow for a user to update their information should their
+     * email, twitter, irc handle change or they want to start/stop mentoring
+     * or apprenticing
+     *
+     * @param \MentorApp\User user a user object with the properties set
+     * @return boolean if the update is successful true returned, otherwise false
+     */
+    public function update(\MentorApp\User $user)
+    {
+        $updateConditions = '';
+        $updateValues = array();
+        // unset the id from the mapping so we don't update the id
+        $mapping = $this->mapping;
+        unset($mapping['id']); 
+        foreach ($mapping as $property => $field) {
+            $updateConditions .= $field . '=:' . $field . ', ';
+            $updateValues[$field] = $user->$property;
+        }
+        $updateQuery = 'UPDATE user SET ' . substr($updateConditions, 0, -2);
+        $updateQuery .= ' WHERE id=:id';
+        try {
+            $statement = $this->db->prepare($updateQuery);
+            $statement->execute($updateValues);
+            $rowCount = $statement->rowCount();
+        } catch(\PDOException $e) {
+            // log
+        }
+        if ($rowCount < 1) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Method to handle the saving of skills to a specific user
      *
      * @param string user_id id of the user
@@ -131,10 +166,14 @@ class UserService
         } 
         $table = $type . "_skills";
         $query = "INSERT INTO $table (id_user, id_tag) VALUES (:user, :tag)";
+        $skills = $this->getSavedSkills($user_id, $table); 
         $statement = $this->db->prepare($query);
         foreach ($tags as $tag) {
             try {
-                $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
+                // fwiw - I acutally hate this...
+                if (!in_array($tag->id, $skills)) {
+                    $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
+                }
             } catch (\PDOException $e) {
                 // log it 
                 // maybe rethrow it and catch it in the create/update methods?
@@ -142,6 +181,33 @@ class UserService
         }
     } 
 
+    /**
+     * Private method to get a list of all the skills saved in the table for
+     * the user so items aren't double saved
+     *
+     * @param string user_id id of the user to look up
+     * @param string table table of skills to look in
+     * @return array an array of all the skill ids saved for the user
+     */
+    private function getSavedSkills($user_id, $table)
+    {
+        if ($table !== 'teaching_skills' && $table !== 'learning_skills') {
+            return array();
+        }
+        $query = "SELECT id_tag FROM $table WHERE id_user=:id";
+        $skills = array();
+        try {
+            $statement = $this->db->prepare($query);
+            $statement->execute(array('id' => $user_id));
+            while ($row = $statement->fetch()) {
+                $skills[] = $row['id_tag'];
+            }
+        } catch (\PDOException $e) {
+            //log it
+        }
+        return $skills;
+    }
+          
     /**
      * Method to override the default mapping array
      *
