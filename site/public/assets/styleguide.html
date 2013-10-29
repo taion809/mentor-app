@@ -5,99 +5,128 @@
         <meta http-equiv="X-UA-Compatible" content="chrome=1">
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-        <link rel="stylesheet" type="text/css" href="styles/legacy-stylesheet.css" media="screen"/>
+        <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.3.0/pure-min.css">
+        <link rel="stylesheet" type="text/css" href="styles/stylesheet.css" media="screen"/>
         <!--[if lt IE 9]> <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script> <![endif]-->
         <title>PHP Mentoring | Vision</title>
     </head>
 <body>
-    <header>
-        <div class="inner">
-            <h1><a href="/">PHP Mentoring</a></h1>
-            <h2>building strong developers</h2>
-            <a href="https://github.com/phpmentoring" class="button"><small>Our organization on</small>GitHub</a>
+    <nav class="pure-menu pure-menu-open pure-menu-horizontal">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li class="pure-menu-selected"><a href="#">Our Vision</a></li>
+            <li><a href="#">Guidelines</a></li>
+            <li><a href="#">Login</a></li>
+            <li><a href="#">Sign Up</a></li>
+        </ul>
+    </nav>
+    <header class="main">
+        <div class="container">
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <h1>PHP Mentoring</h1>
+                    <h2>building strong developers</h2>
+                </div>
+            </div>
         </div>
     </header>
-    <div id="content-wrapper">
-        <nav id="main-nav" class="inner clearfix">
-            <ul>
-                <li><a href="#vision-who">Who?</a></li>
-                <li><a href="#vision-what">What?</a></li>
-                <li><a href="#vision-when">When?</a></li>
-                <li><a href="#vision-where">Where?</a></li>
-                <li><a href="#vision-why">Why?</a></li>
-                <li><a href="#vision-how">How?</a></li>
-            </ul>
-        </nav>
-        <div class="inner clearfix">
-            <section id="main-content">
-                <h1>Our Vision</h1>
-                <h2 id="vision-who">Who?</h2>
-                <section>
-                    <p>We are a formal, personal, long term, peer to peer mentorship organization focused on creating networks of skilled developers from all walks of life.</p>
-                    <p>We are PHP developers first and foremost but that is not all we do, nor is it the only skill we intend to pass on to others.</p>
-                    <p>We are mentors and apprentices, teachers and students, coaches, counselers and friends. We're not in this for profit but for the end result, a strong community of talented developers doing some fabulous work.</p>
-                    <p>We give back to the community as much as we take, we build up not tear down, and above all we believe in "play nice" and "code well".</p>
-                </section>
-                <h2 id="vision-what">What?</h2>
-                <section>
-                    <p>Mentorship is a personal developmental relationship in which a more experienced or more knowledgeable person helps to guide a less experienced or less knowledgeable person.</p>
-                    <p>Mentorship is more than just answering questions or providing help, it's about learning, communication, and interaction.</p>
-                    <p>There are many different types of mentorships and mentorship programs. We have chosen a specific set of facets that describe the mentorship relationships for our program.</p>
-                    <p>There are mentorship organizations which have very formal procedures and there are also much more informal mentorships. Because we have both rules for relationships and procedures for mentorships this is a formal organization, even though the relationships themselves are informal.</p>
-                    <p>Not every mentorship relationship needs to be, or should be, the kind where you invite them to your wedding, but we do focus more on personal involvement between two people, which makes our organization more personal than professional.</p>
-                    <p>Although short term, intensive mentorships can be useful for specific skills. We feel that the end result of a good mentorship is a healthy career in the long term. This means our mentorships should be a rich and ever changing career-long experience.</p>
-                    <p>Although group mentorships work well at the beginning of a career, we feel the best "bang for your buck" comes from a face-to-face relationship.</p>
-                </section>
-                <h2 id="vision-when">When?</h2>
-                <section>
-                    <p>The idea for a mentorship organization for technical communities is not a new one.  However several people in the PHP community have been wanting a common place to come together with some basic rules and guidelines where people could connect with each other and get questions answered in a common way. Sometimes a little organization and beaurocracy makes things that were previously difficult much easier.  Our goal is a community where we can easily match mentors and apprentices, where we guide mentorships, and where sets of rules can help with problems.</p>
-                </section>
-                <h2 id="vision-where">Where?</h2>
-                <section>
-                    <p>We communicate in various ways - from a google groups mailing list to an irc channel, wikis and example code directories on github, and our website. We also encourage face-to-face interaction - through user groups, meetups, conferences and other methods. We use technology to help connect people around the globe. Communication is the key to any good relationship.</p>
-                </section>
-                <h2 id="vision-why"><a href="why-mentor.html">Why?</a></h2>
-                <section>
-                    <p>Mentoring is great for your career. It provides:</p>
-                    <ul>
-                        <li>Information - technology moves fast, get help and insight into your every day work</li>
-                        <li>Recognition - as a mentor, your apprentice's work and progress will reflect on you</li>
-                        <li>Role modeling - as an apprentice you will have people to look up to, so you can map where you want to be in the future</li>
-                        <li>Advice - get insights into your strengths and weaknesses as well as guidance on where to go next</li>
-                        <li>Networking - find opportunities and meet people you never would have before</li>
-                        <li>Interaction - regular communication helps you introduce more social interaction into your work</li>
-                        <li>Intangibles - humans want to do things that make us feel good, from giving back knowledge received as an apprentice to a new apprentice or just helping someone with a problem</li>
+    <section class="main">
+        <div class="container">
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <ul class="anchors">
+                        <li><a href="#vision-who">Who?</a></li>
+                        <li><a href="#vision-what">What?</a></li>
+                        <li><a href="#vision-when">When?</a></li>
+                        <li><a href="#vision-where">Where?</a></li>
+                        <li><a href="#vision-why">Why?</a></li>
+                        <li><a href="#vision-how">How?</a></li>
                     </ul>
-                </section>
-                <h2 id="vision-how"><a href="guidelines.html">How?</a></h2>
-                <section>
-                    <p>Want to become part of the vision?</p>
-                    <section>
-                    <ol>
-                        <li>Read the <a href="guidelines.html#guidelines-charter">charter</a> and <a href="guidelines.html#guidelines-mentor">rules</a></li>
-                        <li>Follow the <a href="guidelines.html#guidelines-started">checklist for new mentorship partners</a></li>
-                        <li>Connect with mentors or apprentices waiting to be matched</li>
-                        <li>Follow the <a href="guidelines.html#guidelines-pairing">guidelines to match up</a></li>
-                        <li>Mark your pairing on the <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/Mentors-and-Apprentices">Mentors and Apprentices wiki</a></li>
-                        <li>Start mentoring!</li>
-                        <li>Use <a href="guidelines.html#guidelines-resources">ongoing mentorship resources</a> to keep the relationship strong</li>
-                        <li>Further Questions? Check out our <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/HOWTO">How-To wiki</a></li>
-                    </ol>
-                    </section>
-                </section>
-            </section>
-            <aside id="sidebar">
-                <a href="/why-mentor.html" class="button document">Why Mentoring?</a>
-                <a href="/guidelines.html" class="button document">Mentoring Guidelines</a>
-                <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/HOWTO" class="button document">HOWTO</a>
-                <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/Mentors-and-Apprentices" class="button document" target="_blank">Sign Up</a>
-                <a href="http://webchat.freenode.net?channels=phpmentoring&uio=MTE9MjI2dd" class="button discussion" title="#phpmentoring on irc.freenode.net" target="_blank">Join Us On IRC</a>
-            </aside>
+                </div>
+            </div>
         </div>
-        <footer>
-            <p>Copyright &copy;2012 PHP Mentoring</p>
-            <p>This page was generated by <a href="http://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
-        </footer>
-    </div>
+    </section>
+    <section class="main">
+        <div class="container">
+            <div class="pure-g">
+                <div class="pure-u-4-5" id="main-content">
+                    <h1>Our Vision</h1>
+                    <h2 id="vision-who">Who?</h2>
+                    <section>
+                        <p>We are a formal, personal, long term, peer to peer mentorship organization focused on creating networks of skilled developers from all walks of life.</p>
+                        <p>We are PHP developers first and foremost but that is not all we do, nor is it the only skill we intend to pass on to others.</p>
+                        <p>We are mentors and apprentices, teachers and students, coaches, counselers and friends. We're not in this for profit but for the end result, a strong community of talented developers doing some fabulous work.</p>
+                        <p>We give back to the community as much as we take, we build up not tear down, and above all we believe in "play nice" and "code well".</p>
+                    </section>
+                    <h2 id="vision-what">What?</h2>
+                    <section>
+                        <p>Mentorship is a personal developmental relationship in which a more experienced or more knowledgeable person helps to guide a less experienced or less knowledgeable person.</p>
+                        <p>Mentorship is more than just answering questions or providing help, it's about learning, communication, and interaction.</p>
+                        <p>There are many different types of mentorships and mentorship programs. We have chosen a specific set of facets that describe the mentorship relationships for our program.</p>
+                        <p>There are mentorship organizations which have very formal procedures and there are also much more informal mentorships. Because we have both rules for relationships and procedures for mentorships this is a formal organization, even though the relationships themselves are informal.</p>
+                        <p>Not every mentorship relationship needs to be, or should be, the kind where you invite them to your wedding, but we do focus more on personal involvement between two people, which makes our organization more personal than professional.</p>
+                        <p>Although short term, intensive mentorships can be useful for specific skills. We feel that the end result of a good mentorship is a healthy career in the long term. This means our mentorships should be a rich and ever changing career-long experience.</p>
+                        <p>Although group mentorships work well at the beginning of a career, we feel the best "bang for your buck" comes from a face-to-face relationship.</p>
+                    </section>
+                    <h2 id="vision-when">When?</h2>
+                    <section>
+                        <p>The idea for a mentorship organization for technical communities is not a new one.  However several people in the PHP community have been wanting a common place to come together with some basic rules and guidelines where people could connect with each other and get questions answered in a common way. Sometimes a little organization and beaurocracy makes things that were previously difficult much easier.  Our goal is a community where we can easily match mentors and apprentices, where we guide mentorships, and where sets of rules can help with problems.</p>
+                    </section>
+                    <h2 id="vision-where">Where?</h2>
+                    <section>
+                        <p>We communicate in various ways - from a google groups mailing list to an irc channel, wikis and example code directories on github, and our website. We also encourage face-to-face interaction - through user groups, meetups, conferences and other methods. We use technology to help connect people around the globe. Communication is the key to any good relationship.</p>
+                    </section>
+                    <h2 id="vision-why"><a href="why-mentor.html">Why?</a></h2>
+                    <section>
+                        <p>Mentoring is great for your career. It provides:</p>
+                        <ul>
+                            <li>Information - technology moves fast, get help and insight into your every day work</li>
+                            <li>Recognition - as a mentor, your apprentice's work and progress will reflect on you</li>
+                            <li>Role modeling - as an apprentice you will have people to look up to, so you can map where you want to be in the future</li>
+                            <li>Advice - get insights into your strengths and weaknesses as well as guidance on where to go next</li>
+                            <li>Networking - find opportunities and meet people you never would have before</li>
+                            <li>Interaction - regular communication helps you introduce more social interaction into your work</li>
+                            <li>Intangibles - humans want to do things that make us feel good, from giving back knowledge received as an apprentice to a new apprentice or just helping someone with a problem</li>
+                        </ul>
+                    </section>
+                    <h2 id="vision-how"><a href="guidelines.html">How?</a></h2>
+                    <section>
+                        <p>Want to become part of the vision?</p>
+                        <section>
+                        <ol>
+                            <li>Read the <a href="guidelines.html#guidelines-charter">charter</a> and <a href="guidelines.html#guidelines-mentor">rules</a></li>
+                            <li>Follow the <a href="guidelines.html#guidelines-started">checklist for new mentorship partners</a></li>
+                            <li>Connect with mentors or apprentices waiting to be matched</li>
+                            <li>Follow the <a href="guidelines.html#guidelines-pairing">guidelines to match up</a></li>
+                            <li>Mark your pairing on the <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/Mentors-and-Apprentices">Mentors and Apprentices wiki</a></li>
+                            <li>Start mentoring!</li>
+                            <li>Use <a href="guidelines.html#guidelines-resources">ongoing mentorship resources</a> to keep the relationship strong</li>
+                            <li>Further Questions? Check out our <a href="https://github.com/phpmentoring/phpmentoring.github.com/wiki/HOWTO">How-To wiki</a></li>
+                        </ol>
+                        </section>
+                    </section>
+                    <hr class="spacer">
+                    <section>
+                        <pre>session_start();</pre>
+                    </section>
+                    <section>
+                        <pre class="well">session_start();</pre>
+                    </section>
+                </div>
+                <div class="pure-u-1-5" id="main-sidebar">
+                    <p><strong>Sidebar</strong> for app-y stuff.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="main">
+        <div class="container">
+            <div class="pure-g">
+                <div class="pure-u-1">
+                    <p>Copyright &copy; 2013 PHP Mentoring</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

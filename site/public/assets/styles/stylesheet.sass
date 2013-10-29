@@ -1,0 +1,137 @@
+/**
+ * Colors
+ */
+$white: #fff
+$fontGrey: #666
+$backgroundGrey: #fafafa
+$linkBlue: #2879d0
+$linkHover: #2268b2
+$accentBlue: #9ddcff
+
+/**
+ * Units
+ */
+$standardMargin: 40px
+$standardMarginHalf: 20px
+$radius: 4px
+
+/**
+ * Font Stacks
+ */
+.fontArchitects
+    font-family: 'Architects Daughter', 'Helvetica Neue', Helvetica, Arial, serif
+.fontBasic
+    font-size: 15px
+    font-family: 'Helvetica Neue', Helvetica, Arial, serif
+    font-weight: 400
+    color: $fontGrey
+.fontCode
+    font-family: andale mono, monaco, courier new, courier monospace
+    letter-spacing: normal
+    font-size: 15px
+    line-height: 15px
+
+/**
+ * Typography
+ */
+h1, h2, h3, h4, h5, h6
+    font-weight: 800
+    margin: 0
+    a
+        text-decoration: none
+h1
+    font-size: 48px
+h2
+    font-size: 24px
+h3, h4, h5, h6
+    font-size: 16px
+a
+    color: $linkBlue
+    &:hover
+        color: $linkHover
+        text-decoration: none
+hr
+    background-color: $linkHover
+    height: 2px
+    border: 0px
+    margin: 10px 0
+    &.spacer
+        margin: 50px 0
+pre, code /* @todo: js syntax highlighting? */
+    @extend .fontCode
+    &.well
+        -webkit-border-radius: 4px /* @todo: make mixin */
+        -moz-border-radius: 4px
+        border-radius: 4px
+        border: 1px solid darken($backgroundGrey, 20%)
+        padding: 15px
+        background: darken($backgroundGrey, 5%)
+#main-content
+    h1, h2, h3, h4, h5, h6
+        @extend .fontArchitects
+#main-sidebar
+    /* @todo */
+
+/**
+ * Utility
+ */
+.clear
+    display: block
+    height: 1%
+    &:after
+        clear: both
+        content: '.'
+        display: block
+        visibility: hidden
+        height: 0
+
+/**
+ * Global
+ */
+body
+    @extend .fontBasic
+    line-height: 1.5
+    background: $backgroundGrey
+section,
+footer
+    &.main
+        margin: 0 0 $standardMargin 0
+header
+    background: $linkBlue /* @todo: fix this so you can resize the browser */
+    height: 200px
+    display: block
+    margin: 0 0 $standardMargin 0
+    padding: 0
+    h1, h2, h3, h4, h5, h6
+        @extend .fontArchitects
+        color: $backgroundGrey
+        font-weight: 200
+    h1
+        margin: 10px 0 0 0
+        font-size: 78px
+    h2
+        margin: 0
+        color: $accentBlue
+ul.anchors
+    padding: 0
+    margin: 0 0 $standardMargin 0
+    list-style: none
+    @extend .container
+    @extend .clear
+    li
+        float: left
+        margin: 0 20px 0 0
+        a
+            text-decoration: none
+            &:hover
+                text-decoration: underline
+section.main section
+    margin: 0 0 20px 0
+footer
+    height: 200px
+    padding: 100px 0 0 0
+    width: auto
+.container
+    width: 960px
+    margin: auto
+    position: relative

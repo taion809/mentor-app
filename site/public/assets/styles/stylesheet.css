@@ -1,0 +1,131 @@
+/*
+ * Colors
+ */
+/*
+ * Units
+ */
+/*
+ * Font Stacks
+ */
+.fontArchitects, #main-content h1, #main-content h2, #main-content h3, #main-content h4, #main-content h5, #main-content h6, header h1, header h2, header h3, header h4, header h5, header h6 {
+  font-family: "Architects Daughter", "Helvetica Neue", Helvetica, Arial, serif; }
+
+.fontBasic, body {
+  font-size: 15px;
+  font-family: "Helvetica Neue", Helvetica, Arial, serif;
+  font-weight: 400;
+  color: #666666; }
+
+.fontCode, pre, code {
+  font-family: andale mono, monaco, courier new, courier monospace;
+  letter-spacing: normal;
+  font-size: 15px;
+  line-height: 15px; }
+
+/*
+ * Typography
+ */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 800;
+  margin: 0; }
+  h1 a, h2 a, h3 a, h4 a, h5 a, h6 a {
+    text-decoration: none; }
+
+h1 {
+  font-size: 48px; }
+
+h2 {
+  font-size: 24px; }
+
+h3, h4, h5, h6 {
+  font-size: 16px; }
+
+a {
+  color: #2879d0; }
+  a:hover {
+    color: #2268b2;
+    text-decoration: none; }
+
+hr {
+  background-color: #2268b2;
+  height: 2px;
+  border: 0px;
+  margin: 10px 0; }
+  hr.spacer {
+    margin: 50px 0; }
+
+pre.well, code.well {
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  border: 1px solid #c7c7c7;
+  padding: 15px;
+  background: #ededed; }
+
+#main-sidebar {
+  /* @todo */ }
+
+/*
+ * Utility
+ */
+.clear, ul.anchors {
+  display: block;
+  height: 1%; }
+  .clear:after, ul.anchors:after {
+    clear: both;
+    content: ".";
+    display: block;
+    visibility: hidden;
+    height: 0; }
+
+/*
+ * Global
+ */
+body {
+  line-height: 1.5;
+  background: #fafafa; }
+
+section.main,
+footer.main {
+  margin: 0 0 40px 0; }
+
+header {
+  background: #2879d0;
+  height: 200px;
+  display: block;
+  margin: 0 0 40px 0;
+  padding: 0; }
+  header h1, header h2, header h3, header h4, header h5, header h6 {
+    color: #fafafa;
+    font-weight: 200; }
+  header h1 {
+    margin: 10px 0 0 0;
+    font-size: 78px; }
+  header h2 {
+    margin: 0;
+    color: #9ddcff; }
+
+ul.anchors {
+  padding: 0;
+  margin: 0 0 40px 0;
+  list-style: none; }
+  ul.anchors li {
+    float: left;
+    margin: 0 20px 0 0; }
+    ul.anchors li a {
+      text-decoration: none; }
+      ul.anchors li a:hover {
+        text-decoration: underline; }
+
+section.main section {
+  margin: 0 0 20px 0; }
+
+footer {
+  height: 200px;
+  padding: 100px 0 0 0;
+  width: auto; }
+
+.container, ul.anchors {
+  width: 960px;
+  margin: auto;
+  position: relative; }
