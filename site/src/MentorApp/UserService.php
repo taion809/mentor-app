@@ -217,4 +217,14 @@ class UserService
     {
         $this->mapping = $mapping;
     }
+
+    /**
+     * Method to retrieve the mapping array
+     *
+     * @return array an array of the mappings
+     */
+    public function getMapping()
+    {
+        return $this->mapping;
+    }
 }

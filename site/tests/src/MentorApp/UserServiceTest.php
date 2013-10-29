@@ -269,4 +269,71 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $userService = new UserService($this->db);
         $this->assertTrue($userService->update($user));
     }
+
+    /**
+     * Test to ensure false is returned when affected rows is 0
+     */
+    public function testUserUpdateReturnsFalse()
+    {
+        // create a user
+        $user = new User();
+        $user->id = '123abcde45';
+        $user->firstName = 'Test';
+        $user->lastName = 'User';
+        $user->email = 'test.user@gmail.com';
+        $user->ircNick = 'testUser';
+        $user->twitterHandle = '@testUser';
+        $user->mentorAvailable = true;
+        $user->apprenticeAvailable = false;
+        $user->timezone = 'America/Chicago';
+
+        //build the array for the execute method
+        $valueArray = array();
+        $valueArray['first_name'] = $user->firstName;
+        $valueArray['last_name'] = $user->lastName;
+        $valueArray['email'] = $user->email;
+        $valueArray['irc_nick'] = $user->ircNick;
+        $valueArray['twitter_handle'] = $user->twitterHandle;
+        $valueArray['mentor_available'] = $user->mentorAvailable;
+        $valueArray['apprentice_available'] = $user->apprenticeAvailable;
+        $valueArray['timezone'] = $user->timezone;
+
+        // build the expected query for user
+        $expectedQuery = "UPDATE user SET first_name=:first_name, last_name=:last_name, ";
+        $expectedQuery .= "email=:email, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
+        $expectedQuery .= "mentor_available=:mentor_available, apprentice_available=:apprentice_available, ";
+        $expectedQuery .= "timezone=:timezone WHERE id=:id";
+
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->with($expectedQuery)
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->once())
+            ->method('execute')
+            ->with($valueArray)
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+
+        $userService = new UserService($this->db);
+        $this->assertFalse($userService->update($user));
+    }
+
+    /**
+     * Test for the setMapping method
+     */
+    public function testMappingCanBeSet()
+    {
+        $userService = new UserService($this->db);
+        $mapping = array(
+            'first_name' => 'firstName',
+            'last_name' => 'lastName'
+        );
+        $userService->setMapping($mapping);
+        $retrieved = $userService->getMapping();
+        $this->assertSame($mapping, $retrieved);
+    }
 }
