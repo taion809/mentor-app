@@ -15,6 +15,9 @@ namespace MentorApp;
  */
 class UserService
 {
+    const SKILL_TYPE_TEACHING = 'teaching';
+    const SKILL_TYPE_LEARNING = 'learning';
+
     /**
      * @var \PDO db PDO instance to be used by the rest of the class
      */
@@ -58,32 +61,26 @@ class UserService
         if (!is_string($id) || $id == '') {
             return null;
         }
-        $user_fields = implode(', ', $this->mapping);
-        $query = 'SELECT ' . $user_fields . ' FROM user ';  
-        $query .= 'WHERE id = :id';
-        $teachingTagQuery = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
-        $learningTagQuery = 'SELECT id_tag FROM learning_skills WHERE id_user = :id';
+
         try {
+            $query = 'SELECT ' . implode(', ', $this->mapping) . ' FROM user WHERE id = :id';
             $statement = $this->db->prepare($query);
-            $teachingStatement = $this->db->prepare($teachingTagQuery);
-            $learningStatement = $this->db->prepare($learningTagQuery);
             $statement->execute(array('id' => $id));
-            $teachingStatement->execute(array('id' => $id));
-            $learningStatement->execute(array('id' => $id));
-            $values = $statement->fetch();
-            $teachingSkills = $teachingStatement->fetchAll();
-            $learningSkills = $learningStatement->fetchAll();
+            $userData = $statement->fetch();
+
+            $user = new User();
+            foreach ($this->mapping as $property => $dbColumnName) {
+                $user->$property = htmlentities($userData[$dbColumnName]);
+            }
+
+            $user->teachingSkills = $this->retrieveSkills($id, self::SKILL_TYPE_TEACHING);
+            $user->learningSkills = $this->retrieveSkills($id, self::SKILL_TYPE_LEARNING);
+
+            return $user;
         } catch (\PDOException $e) {
             // log the error
             return null;
         }
-        $user = new User();
-        foreach ($this->mapping as $key => $value) {
-            $user->$key = htmlentities($values[$value]);
-        }
-        $user->teachingSkills = $teachingSkills;
-        $user->learningSkills = $learningSkills;
-        return $user;
     }
 
     /**
@@ -108,8 +105,8 @@ class UserService
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($statementValues);
-            $this->saveTags($user->id, $user->teachingSkills);
-            $this->saveTags($user->id, $user->learningSkills, 'learning');
+            $this->saveSkills($user->id, $user->teachingSkills, self::SKILL_TYPE_TEACHING);
+            $this->saveSkills($user->id, $user->learningSkills, self::SKILL_TYPE_LEARNING);
         } catch (\PDOException $e) {
             // log errors
             return false;
@@ -159,14 +156,13 @@ class UserService
      * @param array tags an array of tag instances to attach to the user
      * @param string type the type of skills to be saved 
      */
-    private function saveTags($user_id, Array $tags, $type="teaching")
+    private function saveSkills($user_id, array $tags, $type)
     {
-        if ($type !== "teaching" && $type !== "learning") {
+        if (!$this->validSkillsType($type)) {
             return false;
-        } 
-        $table = $type . "_skills";
-        $query = "INSERT INTO $table (id_user, id_tag) VALUES (:user, :tag)";
-        $skills = $this->getSavedSkills($user_id, $table); 
+        }
+        $query = "INSERT INTO {$type}_skills (id_user, id_tag) VALUES (:user, :tag)";
+        $skills = $this->retrieveSkills($user_id, $type); 
         $statement = $this->db->prepare($query);
         foreach ($tags as $tag) {
             try {
@@ -175,7 +171,7 @@ class UserService
                     $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
                 }
             } catch (\PDOException $e) {
-                // log it 
+                //TODO log it 
                 // maybe rethrow it and catch it in the create/update methods?
             }
         }
@@ -186,28 +182,46 @@ class UserService
      * the user so items aren't double saved
      *
      * @param string user_id id of the user to look up
-     * @param string table table of skills to look in
+     * @param string type the type of skills to be retrieved
      * @return array an array of all the skill ids saved for the user
      */
-    private function getSavedSkills($user_id, $table)
+    private function retrieveSkills($user_id, $type)
     {
-        if ($table !== 'teaching_skills' && $table !== 'learning_skills') {
-            return array();
+        if (!$this->validSkillsType($type)) {
+            return false;
         }
-        $query = "SELECT id_tag FROM $table WHERE id_user=:id";
-        $skills = array();
+
         try {
-            $statement = $this->db->prepare($query);
+            $statement = $this->db->prepare(
+                "SELECT id_tag FROM {$type}_skills WHERE id_user = :id"
+            );
             $statement->execute(array('id' => $user_id));
+
+            $skills = array();
             while ($row = $statement->fetch()) {
                 $skills[] = $row['id_tag'];
             }
+            return $skills;
         } catch (\PDOException $e) {
-            //log it
+            //TODO log it
+            return array();
         }
-        return $skills;
     }
-          
+
+    /**
+     * Validation method for skills types
+     *
+     * @param string the type to validate
+     * @return boolean whether the string passed in is a valid skills type or not
+     */
+    private function validSkillsType($type)
+    {
+        return in_array($type, array(
+            self::SKILL_TYPE_TEACHING,
+            self::SKILL_TYPE_LEARNING
+        ));
+    }
+
     /**
      * Method to override the default mapping array
      *

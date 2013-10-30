@@ -78,12 +78,18 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             ->with(array('id' => $id))
             ->will($this->returnValue($this->statement));
 
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(1))
             ->method('fetch')
             ->will($this->returnValue($this->mockData));
 
-        $this->statement->expects($this->exactly(2))
-            ->method('fetchAll');
+        $this->statement->expects($this->at(2))
+            ->method('fetch')
+            ->will($this->returnValue(array('id_tag' => 'skill')));
+
+        $this->statement->expects($this->at(3))
+            ->method('fetch')
+            ->will($this->returnValue(array('id_tag' => 'skill')));
+    
 
         $userService = new UserService($this->db);
         $returnedUser = $userService->retrieve($id);
@@ -97,6 +103,11 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             $returnedUser->firstName,
             'First name was not the same'
         );        
+        $this->assertEquals(
+            array('skill'),
+            $returnedUser->teachingSkills,
+            'Skills not assigned to user'
+        );
     }
 
     /**
@@ -126,8 +137,8 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $expectedQuery .= ':apprentice_available, :timezone)';
         $teachingQuery = 'INSERT INTO teaching_skills (id_user, id_tag) VALUES (:user, :tag)';
         $learningQuery = 'INSERT INTO learning_skills (id_user, id_tag) VALUES (:user, :tag)';
-        $teachingCheck = 'SELECT id_tag FROM teaching_skills WHERE id_user=:id';
-        $learningCheck = 'SELECT id_tag FROM learning_skills WHERE id_user=:id';
+        $teachingCheck = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
+        $learningCheck = 'SELECT id_tag FROM learning_skills WHERE id_user = :id';
         $user = new User();
         $user->id = '1932abed12';
         $user->firstName = 'Test';
