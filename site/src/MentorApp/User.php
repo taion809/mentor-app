@@ -34,6 +34,11 @@ class User
     public $email;
 
     /**
+     * @var string githubHandle github handle for the user
+     */
+    public $githubHandle;
+
+    /**
      * @var string ircNick irc nickname for the user
      */
     public $ircNick;
