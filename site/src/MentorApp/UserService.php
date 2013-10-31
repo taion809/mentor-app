@@ -183,13 +183,10 @@ class UserService
             return false;
         }
         $query = "INSERT INTO {$type}_skills (id_user, id_tag) VALUES (:user, :tag)";
-        $skills = $this->retrieveSkills($user_id, $type);
         $statement = $this->db->prepare($query);
         foreach ($tags as $tag) {
             try {
-                if (!in_array($tag->id, $skills)) {
-                    $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
-                }
+                $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
             } catch (\PDOException $e) {
                 //TODO log it
                 // maybe rethrow it and catch it in the create/update methods?
@@ -230,6 +227,37 @@ class UserService
             self::SKILL_TYPE_TEACHING,
             self::SKILL_TYPE_LEARNING
         ));
+    }
+
+    /**
+     * Private method to get a list of all the skills saved in the table for
+     * the user so items aren't double saved
+     *
+     * @param string user_id id of the user to look up
+     * @param string type the type of skills to be retrieved
+     * @return array an array of all the skill ids saved for the user
+     */
+    private function retrieveSkills($user_id, $type)
+    {
+        if (!$this->validSkillsType($type)) {
+            return false;
+        }
+
+        try {
+            $statement = $this->db->prepare(
+                "SELECT id_tag FROM {$type}_skills WHERE id_user = :id"
+            );
+            $statement->execute(array('id' => $user_id));
+
+            $skills = array();
+            while ($row = $statement->fetch()) {
+                $skills[] = $row['id_tag'];
+            }
+            return $skills;
+        } catch (\PDOException $e) {
+            //TODO log it
+            return array();
+        }
     }
 
     /**

@@ -13,23 +13,12 @@ namespace MentorApp;
 class UserTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Test to make sure arbitrarily setting an object property doesn't alter
-     * the interface of the User object
+     * Test to add skills to the User object
+     *
+     * @todo - write test once Tag class is merged into master - dummy test
      */
-    public function testCannotSetArbitraryProperty()
+    public function testAddTeachingSkills()
     {
-        $user = new User();
-        $user->first_name = 'Test';
-        $user->favorite_ice_cream = 'Rocky Road'; 
-        $user_data = get_object_vars($user);
-        $properties = array_keys($user_data);
-        $this->assertFalse(
-            in_array('favorite_ice_cream', $properties),
-            'A property was arbitrarily set on the User DAO'
-        );
+        $this->assertTrue(true);
     }
-
-    /**
-     * Test to ensure that addTeaching 
-     */
 } 
