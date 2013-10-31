@@ -26,17 +26,4 @@ class Tag
      * @var \DateTime added The date\time the tag was added to the system
      */
     public $added;
-
-    /**
-     * __set magic method to prevent additional properties from being set
-     * this will override the default behavior of creating a new property
-     *
-     * @param string $name name of the property attempting to be set
-     * @param string $value value of the property attempting to be set
-     * @throws \Exception
-     */
-    public function __set($name, $value)
-    {
-        throw new \Exception('You cannot set the unknown property: '.$name);
-    }
 }
