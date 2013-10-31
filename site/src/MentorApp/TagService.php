@@ -34,19 +34,25 @@ class TagService
      * @return Tag The filled tag
      * @throws \InvalidArgumentException
      */
-    public function retrieve (Tag $tag)
+    public function retrieve($name)
     {
-        if (empty($tag->name)) {
-            throw new \InvalidArgumentException('Supplied tag does not have a name set');
+        if (empty($name)) {
+            throw new \InvalidArgumentException('Name cannot be empty');
         }
+
         $query = 'select * from `tag` where `name` = :name';
         $stmt = $this->db->prepare($query);
-        $stmt->execute([':name' => $tag->name]);
+        $stmt->execute([':name' => $name]);
+
         if (!$stmt->rowCount()) {
-            return $tag;
+            return null;
         }
+
         $fields = $stmt->fetch(\PDO::FETCH_ASSOC);
 
+        $tag = new Tag();
+
+        $tag->name = $fields['name'];
         $tag->added = new \DateTime($fields['added']);
         $tag->authorized = ($fields['authorized'] == 1);
 
@@ -60,7 +66,7 @@ class TagService
      * @return array The matching tags
      * @throws \InvalidArgumentException
      */
-    public function searchByTerm ($term)
+    public function searchByTerm($term)
     {
         if (empty($term)) {
             throw new \InvalidArgumentException('No search term supplied');
@@ -91,7 +97,7 @@ class TagService
      * @return TagService
      * @throws \InvalidArgumentException
      */
-    public function save (Tag $tag)
+    public function save(Tag $tag)
     {
         if (empty($tag->name)) {
             throw new \InvalidArgumentException('Tag is missing a name');
