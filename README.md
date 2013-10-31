@@ -53,3 +53,8 @@ To apply outstanding migrations run the following:
 $ bin/phinx migrate -e development
 
 If you don't specify the "-e development" then it will default to development with a warning.
+
+Styles
+======
+
+SASS 3.2.10 is required. Presently, SASS and the compiled CSS output is to reside on in the same directory.
