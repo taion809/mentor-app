@@ -31,6 +31,7 @@ class UserService
         'firstName' => 'first_name',
         'lastName' => 'last_name',
         'email' => 'email',
+        'githubHandle' => 'github_handle',
         'ircNick' => 'irc_nick',
         'twitterHandle' => 'twitter_handle',
         'mentorAvailable' => 'mentor_available',
@@ -117,8 +118,8 @@ class UserService
     /**
      * Update method which will update the information for a user profile,
      * this will allow for a user to update their information should their
-     * email, twitter, irc handle change or they want to start/stop mentoring
-     * or apprenticing
+     * email, twitter, github handle, irc handle change or they want to 
+     * start/stop mentoring or apprenticing
      *
      * @param \MentorApp\User user a user object with the properties set
      * @return boolean if the update is successful true returned, otherwise false
