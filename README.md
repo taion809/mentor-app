@@ -57,4 +57,4 @@ If you don't specify the "-e development" then it will default to development wi
 Styles
 ======
 
-SASS 3.2.10 is required. Presently, SASS and the compiled CSS output is to reside on in the same directory.
+SASS 3.2.10 is required. Presently, SASS and the compiled CSS output are to reside on the same directory.
