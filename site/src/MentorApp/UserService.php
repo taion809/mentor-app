@@ -129,7 +129,7 @@ class UserService
         $updateValues = array();
         // unset the id from the mapping so we don't update the id
         $mapping = $this->mapping;
-        unset($mapping['id']); 
+        unset($mapping['id']);
         foreach ($mapping as $property => $field) {
             $updateConditions .= $field . '=:' . $field . ', ';
             $updateValues[$field] = $user->$property;
@@ -140,13 +140,33 @@ class UserService
             $statement = $this->db->prepare($updateQuery);
             $statement->execute($updateValues);
             $rowCount = $statement->rowCount();
-        } catch(\PDOException $e) {
+            $this->deleteSkills($user->id);
+            $this->saveSkills($user->id, $user->teachingSkills, self::SKILL_TYPE_TEACHING);
+            $this->saveSkills($user->id, $user->learningSkills, self::SKILL_TYPE_LEARNING);
+        } catch (\PDOException $e) {
             // log
         }
         if ($rowCount < 1) {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Delete the user data from the data store
+     *
+     * @param string id id of the user to be deleted
+     */
+    public function delete($id)
+    {
+        $deleteQuery = "DELETE FROM user WHERE id = :id";
+        try {
+            $statement = $this->db->prepare($deleteQuery);
+            $statement->execute(array('id' => $id));
+            $this->deleteSkills($id);
+        } catch (\PDOException $e) {
+            // log it
+        }
     }
 
     /**
@@ -162,49 +182,38 @@ class UserService
             return false;
         }
         $query = "INSERT INTO {$type}_skills (id_user, id_tag) VALUES (:user, :tag)";
-        $skills = $this->retrieveSkills($user_id, $type); 
+        $skills = $this->retrieveSkills($user_id, $type);
         $statement = $this->db->prepare($query);
         foreach ($tags as $tag) {
             try {
-                // fwiw - I acutally hate this...
                 if (!in_array($tag->id, $skills)) {
                     $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
                 }
             } catch (\PDOException $e) {
-                //TODO log it 
+                //TODO log it
                 // maybe rethrow it and catch it in the create/update methods?
             }
         }
-    } 
+    }
 
     /**
-     * Private method to get a list of all the skills saved in the table for
-     * the user so items aren't double saved
-     *
-     * @param string user_id id of the user to look up
-     * @param string type the type of skills to be retrieved
-     * @return array an array of all the skill ids saved for the user
+     * Method to remove all the skills associated to a user, identified by id
+     * from the data stores
+     * @param string id id of the user that the skills will be removed from
+     * @return boolean returns true if skills were deleted successfully, false otherwise
      */
-    private function retrieveSkills($user_id, $type)
+    private function deleteSkills($id)
     {
-        if (!$this->validSkillsType($type)) {
-            return false;
-        }
-
+        $teachingQuery = "DELETE FROM teaching_skills WHERE id_user = :id";
+        $learningQuery = "DELETE FROM learning_skills WHERE id_user = :id";
         try {
-            $statement = $this->db->prepare(
-                "SELECT id_tag FROM {$type}_skills WHERE id_user = :id"
-            );
-            $statement->execute(array('id' => $user_id));
-
-            $skills = array();
-            while ($row = $statement->fetch()) {
-                $skills[] = $row['id_tag'];
-            }
-            return $skills;
+            $teachingStatement = $this->db->prepare($teachingQuery);
+            $learningStatement = $this->db->prepare($learningQuery);
+            $teachingStatement->execute(array('id' => $id));
+            $learningStatement->execute(array('id' => $id));
         } catch (\PDOException $e) {
-            //TODO log it
-            return array();
+            // log the error
+            return false;
         }
     }
 
