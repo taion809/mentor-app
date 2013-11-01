@@ -213,6 +213,7 @@ class UserService
             // log the error
             return false;
         }
+        return true;
     }
 
     /**
