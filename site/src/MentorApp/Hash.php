@@ -15,11 +15,11 @@ trait Hash {
      */
     public function generateHash()
     {
-        $finalLength = 10;
-        $shuffle = str_shuffle(md5(rand()) . md5(rand()) . md5(rand()));
-        $length = strlen($shuffle);
-        $hash = substr($shuffle, rand(0, $length - $finalLength), $finalLength);
-        return $hash;
+        $part1 = md5(serialize($this));
+        $part2 = md5(get_class($this));
+        $part3 = md5(rand());
+        $shuffle = str_shuffle($part1 . $part2 . $part3);
+        return substr($shuffle, 0, 10);
     }
 
 }
