@@ -20,7 +20,6 @@ trait Hash {
         $length = strlen($shuffle);
         $hash = substr($shuffle, rand(0, $length - $finalLength), $finalLength);
         return $hash;
-        echo $hash . "\n";
     }
 
 }
