@@ -16,7 +16,8 @@
   },
   "autoload": {
     "psr-0": {
-      "Slim":"vendor/slim/slim/Slim/"
+      "Slim":"vendor/slim/slim/Slim/",
+      "": "./src"
     }
   },
   "minimum-stability":"dev",

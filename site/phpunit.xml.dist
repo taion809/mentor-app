@@ -1,0 +1,19 @@
+<phpunit
+    bootstrap="./tests/Bootstrap.php"
+    colors="true">
+    <testsuites>
+        <testsuite name="PHPMentoring MentorApp Unit Test Suite">
+            <directory>./tests</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <blacklist>
+            <directory>./vendor</directory>
+            <directory>./migrations</directory>
+        </blacklist>
+        <whitelist addUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">src/MentorApp</directory>
+        </whitelist>
+    </filter>
+</phpunit>
