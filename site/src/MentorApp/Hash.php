@@ -15,11 +15,13 @@ trait Hash {
      */
     public function generateHash()
     {
-        $part1 = md5(uniqid('', TRUE));
-        $part2 = md5(microtime());
-        $part3 = md5(rand());
-        $shuffle = str_shuffle($part1 . $part2 . $part3);
-        return substr($shuffle, 0, 10);
+        $parts  = md5(uniqid('', TRUE));
+        $parts .= md5(microtime());
+        $parts .= md5(rand());
+        for($i=0; $i<16; $i++) {
+            $parts = str_shuffle($parts);
+        }
+        return substr($parts, 0, 10);
     }
 
 }
