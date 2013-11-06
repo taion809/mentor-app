@@ -24,15 +24,4 @@ class TagTest extends \PHPUnit_Framework_TestCase
             get_object_vars($tag)
         );
     }
-
-    /**
-     * Test we cannot set arbitrary variables
-     *
-     * @expectedException \Exception
-     */
-    public function testCannotSetAribtrary()
-    {
-        $tag = new Tag();
-        $tag->foo = 'bar';
-    }
 }
