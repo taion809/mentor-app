@@ -15,8 +15,8 @@ trait Hash {
      */
     public function generateHash()
     {
-        $part1 = md5(serialize($this));
-        $part2 = md5(get_class($this));
+        $part1 = md5(uniqid('', TRUE));
+        $part2 = md5(microtime());
         $part3 = md5(rand());
         $shuffle = str_shuffle($part1 . $part2 . $part3);
         return substr($shuffle, 0, 10);
