@@ -33,6 +33,7 @@ class TagService
      * @param Tag $tag The tag to fill
      * @return Tag The filled tag
      * @throws \InvalidArgumentException
+     * @throws \PDOException
      */
     public function retrieve($name)
     {
@@ -40,22 +41,26 @@ class TagService
             throw new \InvalidArgumentException('Name cannot be empty');
         }
 
-        $query = 'select * from `tag` where `name` = :name';
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([':name' => $name]);
+        $query = 'SELECT * FROM `tag` WHERE `name` = :name';
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([':name' => $name]);
 
-        if (!$stmt->rowCount()) {
+            if (!$stmt->rowCount()) {
+                return null;
+            }
+
+            $fields = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+            $tag = new Tag();
+
+            $tag->name = $fields['name'];
+            $tag->added = new \DateTime($fields['added']);
+            $tag->authorized = ($fields['authorized'] == 1);
+        } catch (\PDOException $e) {
+            // log the exception
             return null;
         }
-
-        $fields = $stmt->fetch(\PDO::FETCH_ASSOC);
-
-        $tag = new Tag();
-
-        $tag->name = $fields['name'];
-        $tag->added = new \DateTime($fields['added']);
-        $tag->authorized = ($fields['authorized'] == 1);
-
         return $tag;
     }
 
@@ -65,29 +70,35 @@ class TagService
      * @param string $term The term to search for
      * @return array The matching tags
      * @throws \InvalidArgumentException
+     * @throws \PDOException
      */
     public function searchByTerm($term)
     {
         if (empty($term)) {
             throw new \InvalidArgumentException('No search term supplied');
         }
-        $query = 'select * from `tag` where `name` like "%:term%"';
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([':term' => $term]);
-        if (!$stmt->rowCount()) {
+        $query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
+        try {
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([':term' => $term]);
+            if (!$stmt->rowCount()) {
+                return [];
+            }
+            $return = [];
+
+            while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
+                $tag = new Tag();
+                $tag->name       = $row['name'];
+                $tag->added      = new \DateTime($row['added']);
+                $tag->authorized = ($row['authorized'] == 1);
+
+                $return[] = $tag;
+            }
+        } catch (\PDOException $e) {
+            // log exception
             return [];
         }
-        $return = [];
-
-        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-            $tag = new Tag();
-            $tag->name       = $row['name'];
-            $tag->added      = new \DateTime($row['added']);
-            $tag->authorized = ($row['authorized'] == 1);
-
-            $return[] = $tag;
-        }
-        return $return;
+            return $return;
     }
 
     /**
@@ -96,6 +107,7 @@ class TagService
      * @param Tag $tag The tag to save
      * @return TagService
      * @throws \InvalidArgumentException
+     * @throws \PDOException
      */
     public function save(Tag $tag)
     {
@@ -103,24 +115,27 @@ class TagService
             throw new \InvalidArgumentException('Tag is missing a name');
         }
         $name = $tag->name;
-        $authorized = $tag->authorized?1:0;
+        $authorized = $tag->authorized ? 1 : 0;
         $added = $tag->added->format('Y-m-d H:i:s');
+        try {
+            $query = 'INSERT INTO `tag` (
+                `name`,
+                `authorized`,
+                `added`
+            ) VALUES (
+                :name,
+                :authorized,
+                :added
+            ) ON DUPLICATE KEY UPDATE
+                `authorized` = :authorized
+            ';
 
-        $query = 'insert into `tag` (
-            `name`,
-            `authorized`,
-            `added`
-        ) values (
-            :name,
-            :authorized,
-            :added
-        ) on duplicate key update
-            `authorized` = :authorized
-        ';
-
-        $stmt = $this->db->prepare($query);
-        $stmt->execute([':name' => $name, ':authorized' => $authorized, ':added' => $added]);
-
+            $stmt = $this->db->prepare($query);
+            $stmt->execute([':name' => $name, ':authorized' => $authorized, ':added' => $added]);
+        } catch (\PDOException $e) {
+            // log exception
+            return null;
+        }
         return $this;
     }
 }
