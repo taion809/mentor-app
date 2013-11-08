@@ -30,8 +30,8 @@ class TagService
     /**
      * Fetches a tag from the data store
      *
-     * @param Tag $tag The tag to fill
-     * @return Tag The filled tag
+     * @param string $name Name of the tag to be retrieved
+     * @return Tag The retrieved tag
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
