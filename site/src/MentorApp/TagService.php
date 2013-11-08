@@ -41,8 +41,8 @@ class TagService
             throw new \InvalidArgumentException('Name cannot be empty');
         }
 
-        $query = 'SELECT * FROM `tag` WHERE `name` = :name';
         try {
+        	$query = 'SELECT * FROM `tag` WHERE `name` = :name';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':name' => $name]);
 
@@ -77,8 +77,9 @@ class TagService
         if (empty($term)) {
             throw new \InvalidArgumentException('No search term supplied');
         }
-        $query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
+
         try {
+        	$query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':term' => $term]);
             if (!$stmt->rowCount()) {
