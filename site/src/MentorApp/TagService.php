@@ -42,7 +42,7 @@ class TagService
         }
 
         try {
-        	$query = 'SELECT * FROM `tag` WHERE `name` = :name';
+            $query = 'SELECT * FROM `tag` WHERE `name` = :name';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':name' => $name]);
 
@@ -79,7 +79,7 @@ class TagService
         }
 
         try {
-        	$query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
+            $query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':term' => $term]);
             if (!$stmt->rowCount()) {
