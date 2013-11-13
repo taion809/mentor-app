@@ -139,4 +139,29 @@ class TagService
         }
         return $this;
     }
+
+    /**
+     * Method to delete an existing tag
+     *
+     * @param string $id the ID of the tag
+     * @return boolean
+     */
+    public function delete($id)
+    {
+        if (!filter_var($id, FILTER_VALIDATE_REGEX, ['regex' =>'/^[a-f0-9]{10}$/'])) {
+            return false;
+        }
+        try {
+            $query = "DELETE FROM tags where id = :id";
+            $statement = $this->db->prepare($query);
+            $statement->execute('id' => $id);
+            $rowCount = $statement->rowCount();
+            if ($rowCount < 1) {
+                return false;
+            }
+        } catch(\PDOException $e) {
+            // log it
+        }
+        return true;
+    }
 }
