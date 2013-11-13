@@ -154,7 +154,7 @@ class TagService
         try {
             $query = "DELETE FROM tags where id = :id";
             $statement = $this->db->prepare($query);
-            $statement->execute('id' => $id);
+            $statement->execute(array('id' => $id));
             $rowCount = $statement->rowCount();
             if ($rowCount < 1) {
                 return false;
