@@ -23,5 +23,10 @@ trait Hash {
         }
         return substr($parts, 0, 10);
     }
+    
+    /**
+     * @param $id string
+     */
+    abstract public function exists($id);
 
 }
