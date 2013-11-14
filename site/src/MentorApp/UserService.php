@@ -130,7 +130,7 @@ class UserService
         $updateValues = array();
         // unset the id from the mapping so we don't update the id
         $mapping = $this->mapping;
-        unset($mapping['id']); 
+        unset($mapping['id']);
         foreach ($mapping as $property => $field) {
             $updateConditions .= $field . '=:' . $field . ', ';
             $updateValues[$field] = $user->$property;
@@ -141,13 +141,33 @@ class UserService
             $statement = $this->db->prepare($updateQuery);
             $statement->execute($updateValues);
             $rowCount = $statement->rowCount();
-        } catch(\PDOException $e) {
+            $this->deleteSkills($user->id);
+            $this->saveSkills($user->id, $user->teachingSkills, self::SKILL_TYPE_TEACHING);
+            $this->saveSkills($user->id, $user->learningSkills, self::SKILL_TYPE_LEARNING);
+        } catch (\PDOException $e) {
             // log
         }
         if ($rowCount < 1) {
             return false;
         }
         return true;
+    }
+
+    /**
+     * Delete the user data from the data store
+     *
+     * @param string id id of the user to be deleted
+     */
+    public function delete($id)
+    {
+        $deleteQuery = "DELETE FROM user WHERE id = :id";
+        try {
+            $statement = $this->db->prepare($deleteQuery);
+            $statement->execute(array('id' => $id));
+            $this->deleteSkills($id);
+        } catch (\PDOException $e) {
+            // log it
+        }
     }
 
     /**
@@ -163,20 +183,52 @@ class UserService
             return false;
         }
         $query = "INSERT INTO {$type}_skills (id_user, id_tag) VALUES (:user, :tag)";
-        $skills = $this->retrieveSkills($user_id, $type); 
         $statement = $this->db->prepare($query);
         foreach ($tags as $tag) {
             try {
-                // fwiw - I acutally hate this...
-                if (!in_array($tag->id, $skills)) {
-                    $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
-                }
+                $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
             } catch (\PDOException $e) {
-                //TODO log it 
+                //TODO log it
                 // maybe rethrow it and catch it in the create/update methods?
             }
         }
-    } 
+    }
+
+    /**
+     * Method to remove all the skills associated to a user, identified by id
+     * from the data stores
+     * @param string id id of the user that the skills will be removed from
+     * @return boolean returns true if skills were deleted successfully, false otherwise
+     */
+    private function deleteSkills($id)
+    {
+        $teachingQuery = "DELETE FROM teaching_skills WHERE id_user = :id";
+        $learningQuery = "DELETE FROM learning_skills WHERE id_user = :id";
+        try {
+            $teachingStatement = $this->db->prepare($teachingQuery);
+            $learningStatement = $this->db->prepare($learningQuery);
+            $teachingStatement->execute(array('id' => $id));
+            $learningStatement->execute(array('id' => $id));
+        } catch (\PDOException $e) {
+            // log the error
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Validation method for skills types
+     *
+     * @param string the type to validate
+     * @return boolean whether the string passed in is a valid skills type or not
+     */
+    private function validSkillsType($type)
+    {
+        return in_array($type, array(
+            self::SKILL_TYPE_TEACHING,
+            self::SKILL_TYPE_LEARNING
+        ));
+    }
 
     /**
      * Private method to get a list of all the skills saved in the table for
@@ -207,20 +259,6 @@ class UserService
             //TODO log it
             return array();
         }
-    }
-
-    /**
-     * Validation method for skills types
-     *
-     * @param string the type to validate
-     * @return boolean whether the string passed in is a valid skills type or not
-     */
-    private function validSkillsType($type)
-    {
-        return in_array($type, array(
-            self::SKILL_TYPE_TEACHING,
-            self::SKILL_TYPE_LEARNING
-        ));
     }
 
     /**

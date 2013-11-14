@@ -92,15 +92,4 @@ class User
     {
         $this->learningSkills[] = $tag;
     }
-
-    /**
-     * __set magic method to prevent additional properties from being set
-     * this will override the default behavior of creating a new property
-     *
-     * @param string name name of the property attempting to be set
-     * @param string value value of the property attempting to be set
-     */
-    public function __set($name, $value)
-    {
-    }
 }

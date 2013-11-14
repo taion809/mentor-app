@@ -16,6 +16,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $this->mockData['first_name'] = 'Test';
         $this->mockData['last_name'] = 'User';
         $this->mockData['email'] = 'testuser@gmail.com';
+        $this->mockData['github_handle'] = 'testuser';
         $this->mockData['irc_nick'] = 'testuser';
         $this->mockData['twitter_handle'] = '@testuser';
         $this->mockData['mentor_available'] = true;
@@ -52,7 +53,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'abc123def4';
         $this->mockData['id'] = $id;
-        $expectedQuery = "SELECT id, first_name, last_name, email, irc_nick, ";
+        $expectedQuery = "SELECT id, first_name, last_name, email, github_handle, irc_nick, ";
         $expectedQuery .= "twitter_handle, mentor_available, apprentice_available, ";
         $expectedQuery .= "timezone FROM user WHERE id = :id";
         $teachingQuery = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
@@ -130,20 +131,19 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     public function testEnsureUserIsCreated()
     {
         $expectedQuery = 'INSERT INTO user (id, first_name, last_name, email, ';
-        $expectedQuery .= 'irc_nick, twitter_handle, mentor_available, ';
+        $expectedQuery .= 'github_handle, irc_nick, twitter_handle, mentor_available, ';
         $expectedQuery .= 'apprentice_available, ';
         $expectedQuery .= 'timezone) VALUES (:id, :first_name, :last_name, :email, ';
-        $expectedQuery .= ':irc_nick, :twitter_handle, :mentor_available, ';
+        $expectedQuery .= ':github_handle, :irc_nick, :twitter_handle, :mentor_available, ';
         $expectedQuery .= ':apprentice_available, :timezone)';
         $teachingQuery = 'INSERT INTO teaching_skills (id_user, id_tag) VALUES (:user, :tag)';
         $learningQuery = 'INSERT INTO learning_skills (id_user, id_tag) VALUES (:user, :tag)';
-        $teachingCheck = 'SELECT id_tag FROM teaching_skills WHERE id_user = :id';
-        $learningCheck = 'SELECT id_tag FROM learning_skills WHERE id_user = :id';
         $user = new User();
         $user->id = '1932abed12';
         $user->firstName = 'Test';
         $user->lastName = 'User';
         $user->email = 'test.user@gmail.com';
+        $user->githubHandle = 'testuser';
         $user->ircNick = 'testUser';
         $user->twitterHandle = '@testUser';
         $user->mentor_available = true;
@@ -154,6 +154,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             'first_name' => $user->firstName,
             'last_name' => $user->lastName,
             'email' => $user->email,
+            'github_handle' => $user->githubHandle,
             'irc_nick' => $user->ircNick,
             'twitter_handle' => $user->twitterHandle,
             'mentor_available' => $user->mentorAvailable,
@@ -168,20 +169,10 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->db->expects($this->at(1))
             ->method('prepare')
-            ->with($teachingCheck)
-            ->will($this->returnValue($this->teachingCheckStatement));
-
-        $this->db->expects($this->at(2))
-            ->method('prepare')
             ->with($teachingQuery)
             ->will($this->returnValue($this->statement));
 
-        $this->db->expects($this->at(3))
-            ->method('prepare')
-            ->with($learningCheck)
-            ->will($this->returnValue($this->learningCheckStatement));
-
-        $this->db->expects($this->at(4))
+        $this->db->expects($this->at(2))
             ->method('prepare')
             ->with($learningQuery)
             ->will($this->returnValue($this->statement));
@@ -190,16 +181,6 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             ->method('execute')
             ->with($statementParams)
             ->will($this->returnValue($this->statement));
-
-        $this->teachingCheckStatement->expects($this->once())
-            ->method('execute')
-            ->with(array('id' => $user->id))
-            ->will($this->returnValue($this->teachingCheckStatement));
-
-        $this->learningCheckStatement->expects($this->once())
-            ->method('execute')
-            ->with(array('id' => $user->id))
-            ->will($this->returnValue($this->teachingCheckStatement));
 
         $userService = new UserService($this->db);
         $savedUser = $userService->create($user);
@@ -219,6 +200,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $user->firstName = 'Test';
         $user->lastName = 'User';
         $user->email = 'test.user@gmail.com';
+        $user->githubHandle = 'testuser';
         $user->ircNick = 'testUser';
         $user->twitterHandle = '@testUser';
         $user->mentorAvailable = true;
@@ -240,7 +222,8 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $user->firstName = 'Test';
         $user->lastName = 'User';
         $user->email = 'test.user@gmail.com';
-        $user->ircNick = 'testUser';
+        $user->githubHandle = 'testUser';
+        $user->ircNick = 'testuser';
         $user->twitterHandle = '@testUser';
         $user->mentorAvailable = true;
         $user->apprenticeAvailable = false;
@@ -251,6 +234,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $valueArray['first_name'] = $user->firstName;
         $valueArray['last_name'] = $user->lastName;
         $valueArray['email'] = $user->email;
+        $valueArray['github_handle'] = $user->githubHandle;
         $valueArray['irc_nick'] = $user->ircNick;
         $valueArray['twitter_handle'] = $user->twitterHandle;
         $valueArray['mentor_available'] = $user->mentorAvailable;
@@ -259,16 +243,16 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
 
         // build the expected query for user
         $expectedQuery = "UPDATE user SET first_name=:first_name, last_name=:last_name, ";
-        $expectedQuery .= "email=:email, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
+        $expectedQuery .= "email=:email, github_handle=:github_handle, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
         $expectedQuery .= "mentor_available=:mentor_available, apprentice_available=:apprentice_available, ";
         $expectedQuery .= "timezone=:timezone WHERE id=:id";
 
-        $this->db->expects($this->once())
+        $this->db->expects($this->at(0))
             ->method('prepare')
             ->with($expectedQuery)
             ->will($this->returnValue($this->statement));
 
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(0))
             ->method('execute')
             ->with($valueArray)
             ->will($this->returnValue($this->statement));
@@ -276,6 +260,20 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $this->statement->expects($this->once())
             ->method('rowCount')
             ->will($this->returnValue(1));
+
+        $this->db->expects($this->at(1))
+            ->method('prepare')
+            ->with('DELETE FROM teaching_skills WHERE id_user = :id')
+            ->will($this->returnValue($this->statement));
+
+        $this->db->expects($this->at(2))
+            ->method('prepare')
+            ->with('DELETE FROM learning_skills WHERE id_user = :id')
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->at(2))
+            ->method('execute')
+            ->with(array('id' => $user->id));
 
         $userService = new UserService($this->db);
         $this->assertTrue($userService->update($user));
@@ -292,6 +290,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $user->firstName = 'Test';
         $user->lastName = 'User';
         $user->email = 'test.user@gmail.com';
+        $user->githubHandle = 'testuser';
         $user->ircNick = 'testUser';
         $user->twitterHandle = '@testUser';
         $user->mentorAvailable = true;
@@ -303,6 +302,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $valueArray['first_name'] = $user->firstName;
         $valueArray['last_name'] = $user->lastName;
         $valueArray['email'] = $user->email;
+        $valueArray['github_handle'] = $user->githubHandle;
         $valueArray['irc_nick'] = $user->ircNick;
         $valueArray['twitter_handle'] = $user->twitterHandle;
         $valueArray['mentor_available'] = $user->mentorAvailable;
@@ -311,16 +311,16 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
 
         // build the expected query for user
         $expectedQuery = "UPDATE user SET first_name=:first_name, last_name=:last_name, ";
-        $expectedQuery .= "email=:email, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
+        $expectedQuery .= "email=:email, github_handle=:github_handle, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
         $expectedQuery .= "mentor_available=:mentor_available, apprentice_available=:apprentice_available, ";
         $expectedQuery .= "timezone=:timezone WHERE id=:id";
 
-        $this->db->expects($this->once())
+        $this->db->expects($this->at(0))
             ->method('prepare')
             ->with($expectedQuery)
             ->will($this->returnValue($this->statement));
 
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(0))
             ->method('execute')
             ->with($valueArray)
             ->will($this->returnValue($this->statement));
@@ -328,6 +328,20 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $this->statement->expects($this->once())
             ->method('rowCount')
             ->will($this->returnValue(0));
+
+        $this->db->expects($this->at(1))
+            ->method('prepare')
+            ->with('DELETE FROM teaching_skills WHERE id_user = :id')
+            ->will($this->returnValue($this->statement));
+
+        $this->db->expects($this->at(2))
+            ->method('prepare')
+            ->with('DELETE FROM learning_skills WHERE id_user = :id')
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->at(2))
+            ->method('execute')
+            ->with(array('id' => $user->id));
 
         $userService = new UserService($this->db);
         $this->assertFalse($userService->update($user));
