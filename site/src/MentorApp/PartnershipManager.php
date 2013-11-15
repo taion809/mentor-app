@@ -38,16 +38,17 @@ class PartnershipManager
     {
         $id = '';
         try {
-            $query = "INSERT INTO partnerships (id, mentor_id, apprentice_id) VALUES (:id, :mentor, :apprentice)";
+            $query = "INSERT INTO partnerships (id, id_mentor, id_apprentice) VALUES (:id, :mentor, :apprentice)";
             $query .= " ON DUPLICATE KEY UPDATE mentor_id = :mentor";
             $statement = $this->db->prepare($query);
             $statement->execute(['id' => $id, 'mentor' => $mentor->id, 'apprentice' => $apprentice->id]);
-            $rowCount = $this->db->rowCount();
+            $rowCount = $statement->rowCount();
             if ($rowCount < 1) {
                 return false;
             }
         } catch(\PDOException $e) {
             // log it
+            return false;
         }
         return true;
     }
@@ -61,15 +62,16 @@ class PartnershipManager
     public function delete($id)
     {
         try {
-            $query = "DELETE FROM partnerships WHERE id = :id";
+            $query = "DELETE FROM partnership WHERE id = :id";
             $statement = $this->db->prepare($query);
             $statement->execute(['id' => $id]);
-            $rowCount = $this->db->rowCount();
+            $rowCount = $statement->rowCount();
             if ($rowCount < 1) {
                 return false;
             }
         } catch(\PDOException $e) {
             // log it... 
+            return false;
         }
         return true;
     }
