@@ -242,15 +242,25 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ) ON DUPLICATE KEY UPDATE
                 `authorized` = :authorized
             ';
-        
-        $this->db->expects($this->once())
+        $this->db->expects($this->at(0))
+            ->method('prepare')
+            ->with('SELECT id FROM `tags` WHERE id = :id')
+            ->will($this->returnValue($this->statement)); 
+        $this->db->expects($this->at(1))
             ->method('prepare')
             ->with($query)
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(0))
             ->method('execute')
             ->with($this->isType('array'))
             ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->at(2))
+            ->method('execute')
+            ->with($this->isType('array'))
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(0));
 
         $tagService = new TagService($this->db);
         $tagReturn = $tagService->save($tag);
