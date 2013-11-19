@@ -24,11 +24,12 @@ class CreateTags extends AbstractMigration
     {
         $this->execute('
             create table `tag` (
+                `id` varchar(15) not null,
                 `name` varchar(255) not null unique,
                 `authorized` tinyint(1) not null default 0,
                 `added` datetime not null,
 
-                PRIMARY KEY (`name`)
+                PRIMARY KEY (`id`)
             )
         ');
     }
