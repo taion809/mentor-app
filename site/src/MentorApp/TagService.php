@@ -47,7 +47,7 @@ class TagService
         }
 
         try {
-            $query = 'SELECT * FROM `tag` WHERE `id` = :name';
+            $query = 'SELECT * FROM `tag` WHERE `name` = :name';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':name' => $name]);
 
