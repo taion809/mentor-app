@@ -7,10 +7,6 @@
 
 namespace MentorApp;
 
-/**
- * Temporarily here. There is a real implementation in the user branch.
- */
-
 class TagServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
