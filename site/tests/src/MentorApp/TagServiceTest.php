@@ -268,13 +268,54 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Test to ensure that when a PDO exeception is encountered that false
-     * is returned
+     * Test to ensure that when a \PDO Exception is thrown in save when
+     * updating a tag entry returns false
      */
-    public function testEnsureFalseIsReturnedOnPDOException()
+    public function testSaveReturnsFalseOnPDOException()
     {
         $tag = new Tag();
-        $tag->id = '12345abcde';
+        $tag->id = '123edf23ea';
+        $tag->name = 'TDD';
+        $tag->authorized = false;
+        $tag->added = '2013-11-19 13:56:12';
+
+        $query = 'INSERT INTO `tag` (
+                `id`,
+                `name`,
+                `authorized`,
+                `added`
+            ) VALUES (
+                :id,
+                :name,
+                :authorized,
+                :added
+            ) ON DUPLICATE KEY UPDATE
+                `authorized` = :authorized
+            ';
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->with($query)
+            ->will($this->returnValue($this->statement));
+ 
+        $this->statement->expects($this->once())
+            ->method('execute')
+            ->will($this->throwException(new \PDOException));
+            
+        $tagService = new TagService($this->db);
+        $tagReturn = $tagService->save($tag);
+        $this->assertFalse($tagReturn);
+    }
+
+    /**
+     * Test to ensure that when a PDO exeception is encountered in exists and
+     * throws a \RuntimeException
+     *
+     * @expectedException \RuntimeException
+     * @expectedExceptionMessage Rut Roh! Something terrible happened and we couldn't fix it...
+     */
+    public function testEnsureRuntimeExceptionIsThrownOnPDOExceptionInExists()
+    {
+        $tag = new Tag();
         $tag->name = 'TDD';
         $tag->authorized = true;
         $tag->added = '2013-11-18 21:25:30';
@@ -285,6 +326,5 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
 
         $tagService = new TagService($this->db);
         $tagReturn = $tagService->save($tag);
-        $this->assertFalse($tagReturn);
     }
 }

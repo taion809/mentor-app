@@ -196,6 +196,7 @@ class TagService
             return false;
         } catch (\PDOException $e) {
             // log
+            throw new \RuntimeException('Rut Roh! Something terrible happened and we couldn\'t fix it...');
         }
         return false;
     }
