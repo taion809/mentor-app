@@ -27,22 +27,38 @@ class PartnershipTest extends \PHPUnit_Framework_TestCase
     public function testCreatePartnership()
     {
         $mentor = new User();
-        $mentor->id = '1234567';
+        $mentor->id = '1aef234567';
         $apprentice = new User();
-        $apprentice->id = '1234568';
+        $apprentice->id = '12aef34568';
         $query = "INSERT INTO partnerships (id, id_mentor, id_apprentice) VALUES (:id, :mentor, :apprentice)";
         $query .= " ON DUPLICATE KEY UPDATE mentor_id = :mentor";
-        $this->db->expects($this->once())
+
+        // stubs for the Hash functionality
+        $this->db->expects($this->at(0))
+            ->method('prepare')
+            ->with('SELECT id FROM `partnership` WHERE id = :id')
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->at(0))
+            ->method('execute')
+            ->with($this->isType('array'))
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->at(1))
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+
+        // stubs for the save functionality
+           $this->db->expects($this->at(1))
             ->method('prepare')
             ->with($query)
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
+         $this->statement->expects($this->at(2))
             ->method('execute')
-            ->with(['id' => '', 'mentor' => $mentor->id, 'apprentice' => $apprentice->id])
+            ->with($this->arrayHasKey('id'))
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(3))
             ->method('rowCount')
             ->will($this->returnValue(1));
+        
         $partnershipManager = new PartnershipManager($this->db);
         $result = $partnershipManager->create($mentor, $apprentice);
         $this->assertTrue($result);
@@ -59,15 +75,26 @@ class PartnershipTest extends \PHPUnit_Framework_TestCase
         $apprentice->id = '1234568';
         $query = "INSERT INTO partnerships (id, id_mentor, id_apprentice) VALUES (:id, :mentor, :apprentice)";
         $query .= " ON DUPLICATE KEY UPDATE mentor_id = :mentor";
-        $this->db->expects($this->once())
+        $this->db->expects($this->at(0))
+            ->method('prepare')
+            ->with('SELECT id FROM `partnership` WHERE id = :id')
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->at(0))
+            ->method('execute')
+            ->with($this->isType('array'))
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->at(0))
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+        $this->db->expects($this->at(1))
             ->method('prepare')
             ->with($query)
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(2))
             ->method('execute')
-            ->with(['id' => '', 'mentor' => $mentor->id, 'apprentice' => $apprentice->id])
+            ->with($this->arrayHasKey('id'))
             ->will($this->returnValue($this->statement));
-        $this->statement->expects($this->once())
+        $this->statement->expects($this->at(1))
             ->method('rowCount')
             ->will($this->returnValue(0));
         $partnershipManager = new PartnershipManager($this->db);
@@ -82,10 +109,21 @@ class PartnershipTest extends \PHPUnit_Framework_TestCase
     public function testExceptionReturnsFalse()
     {
         $mentor = new User();
-        $mentor->id = '12345';
+        $mentor->id = '1234567890';
         $apprentice = new User();
         $apprentice->id = '12344';
-        $this->db->expects($this->once())
+        $this->db->expects($this->at(0))
+            ->method('prepare')
+            ->with('SELECT id FROM `partnership` WHERE id = :id')
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->once())
+            ->method('execute')
+            ->with($this->isType('array'))
+            ->will($this->returnValue($this->statement));
+        $this->statement->expects($this->once())
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+        $this->db->expects($this->at(1))
             ->method('prepare')
             ->will($this->throwException(new \PDOException));
         $partnershipManager = new PartnershipManager($this->db);

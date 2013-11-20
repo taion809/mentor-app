@@ -4,7 +4,7 @@
  * @license http://opensource.org/licenses/MIT MIT
  * @package MentorApp
  */
-
+namespace MentorApp;
 /**
  * Add basic hashing method.
  */
@@ -13,7 +13,7 @@ trait Hash {
     /**
      * @return string
      */
-    public function generateHash()
+    public function generate()
     {
         $parts  = md5(uniqid('', TRUE));
         $parts .= md5(microtime());
@@ -21,7 +21,11 @@ trait Hash {
         for($i=0; $i<16; $i++) {
             $parts = str_shuffle($parts);
         }
-        return substr($parts, 0, 10);
+        $hash = substr($parts, 0, 10);
+        if (!$this->exists($hash)) {
+            return $hash;
+        }
+        $this->generate();
     }
     
     /**
