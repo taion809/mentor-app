@@ -12,8 +12,7 @@ To get the Vagrant system running, go to vagrant-mentor-app-php5.4 and run the f
 
 $ vagrant up
 
-This will start the vagrant instance for you. You can have both running at the same time without any issues. To access
-the web server on either you will need to open your browser and go to:
+This will start the vagrant instance for you. To access the web server on either you will need to open your browser and go to:
 
 http://localhost:8080/
 OR
@@ -54,3 +53,8 @@ To apply outstanding migrations run the following:
 $ bin/phinx migrate -e development
 
 If you don't specify the "-e development" then it will default to development with a warning.
+
+Styles
+======
+
+SASS 3.2.10 is required. Presently, SASS and the compiled CSS output are to reside on the same directory.
