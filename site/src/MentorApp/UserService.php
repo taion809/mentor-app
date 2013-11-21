@@ -15,6 +15,14 @@ namespace MentorApp;
  */
 class UserService
 {
+    /**
+     * Using the hash trait
+     */
+    use Hash;
+
+    /**
+     * Constants for the skill types
+     */
     const SKILL_TYPE_TEACHING = 'teaching';
     const SKILL_TYPE_LEARNING = 'learning';
 
@@ -98,6 +106,7 @@ class UserService
         $fields = implode(', ', $this->mapping);
         $valueKeys = '';
         $statementValues = array();
+        $user->id = $this->generate();
         foreach ($this->mapping as $key => $field) {
             $valueKeys .= ':' . $field . ', ';
             $statementValues[$field] = $user->$key;
@@ -279,5 +288,31 @@ class UserService
     public function getMapping()
     {
         return $this->mapping;
+    }
+
+    /**
+     * Implementation of abstract Hash::exists() used to make sure
+     * the generated ID isn't already used for a user
+     *
+     * @param string $id the id that is being checked
+     * @return boolean true if ID exists, false otherwise
+     */
+    public function exists($id)
+    {
+        if ($id === '' || !preg_match('/^[A-Fa-f0-9]{10}$/', $id)) {
+            throw new \RuntimeException('Oh noes! Something went wrong and we weren\'t able to fix it');
+        }
+        try {
+            $query = "SELECT id FROM `users` WHERE id = :id";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['id' => $id]);
+            if($statement->rowCount() > 0) {
+                return true;
+            }
+        } catch (\PDOException $e) {
+            // log it
+            throw new \RuntimeException('Oh noes! Something went wrong and we weren\'t able to fix it');
+        }
+        return false;
     }
 }
