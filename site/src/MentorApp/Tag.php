@@ -13,6 +13,11 @@ namespace MentorApp;
 class Tag
 {
     /**
+     * @var string id The ID hash for the tag
+     */
+    public $id;
+
+    /**
      * @var string name The unique name for the tag
      */
     public $name;

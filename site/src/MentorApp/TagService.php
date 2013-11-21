@@ -13,6 +13,11 @@ namespace MentorApp;
 class TagService
 {
     /**
+     * Use the Hash trait to take care of hash generation
+     */
+    use Hash;
+
+    /**
      * @var \PDO $db PDO instance of the data store connection
      */
     protected $db;
@@ -53,7 +58,7 @@ class TagService
             $fields = $stmt->fetch(\PDO::FETCH_ASSOC);
 
             $tag = new Tag();
-
+            $tag->id = $fields['id'];
             $tag->name = $fields['name'];
             $tag->added = new \DateTime($fields['added']);
             $tag->authorized = ($fields['authorized'] == 1);
@@ -89,17 +94,18 @@ class TagService
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
                 $tag = new Tag();
-                $tag->name       = $row['name'];
-                $tag->added      = new \DateTime($row['added']);
+                $tag->id = $row['id'];
+                $tag->name = $row['name'];
+                $tag->added = new \DateTime($row['added']);
                 $tag->authorized = ($row['authorized'] == 1);
 
-                $return[] = $tag;
+                $tags[] = $tag;
             }
         } catch (\PDOException $e) {
             // log exception
             return [];
         }
-            return $return;
+            return $tags;
     }
 
     /**
@@ -115,15 +121,21 @@ class TagService
         if (empty($tag->name)) {
             throw new \InvalidArgumentException('Tag is missing a name');
         }
+        if ($tag->id === null) {
+            $tag->id = $this->generate();
+        }
+        $id = $tag->id;
         $name = $tag->name;
         $authorized = $tag->authorized ? 1 : 0;
-        $added = $tag->added->format('Y-m-d H:i:s');
+        $added = $tag->added;
         try {
             $query = 'INSERT INTO `tag` (
+                `id`,
                 `name`,
                 `authorized`,
                 `added`
             ) VALUES (
+                :id,
                 :name,
                 :authorized,
                 :added
@@ -132,12 +144,12 @@ class TagService
             ';
 
             $stmt = $this->db->prepare($query);
-            $stmt->execute([':name' => $name, ':authorized' => $authorized, ':added' => $added]);
+            $stmt->execute(['id' => $id, 'name' => $name, 'authorized' => $authorized, 'added' => $added]);
         } catch (\PDOException $e) {
             // log exception
-            return null;
+            return false;
         }
-        return $this;
+        return true;
     }
 
     /**
@@ -152,7 +164,7 @@ class TagService
             return false;
         }
         try {
-            $query = "DELETE FROM tags where id = :id";
+            $query = "DELETE FROM tags WHERE id = :id";
             $statement = $this->db->prepare($query);
             $statement->execute(array('id' => $id));
             $rowCount = $statement->rowCount();
@@ -163,5 +175,29 @@ class TagService
             // log it
         }
         return true;
+    }
+
+    /**
+     * Exists method satisfies the contract of the trait and determines
+     * whether or not the generated id exists in the system
+     *
+     * @param string id the id to check
+     * @return boolean returns true if id exists and false otherwise
+     */
+    public function exists($id)
+    {
+        try {
+            $query = "SELECT id FROM `tags` WHERE id = :id";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['id' => $id]);
+            if($statement->rowCount() > 0) {
+                return true;
+            }
+            return false;
+        } catch (\PDOException $e) {
+            // log
+            throw new \RuntimeException('Rut Roh! Something terrible happened and we couldn\'t fix it...');
+        }
+        return false;
     }
 }
