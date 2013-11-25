@@ -26,7 +26,7 @@ trait Hash {
         if (!$this->exists($hash)) {
             return $hash;
         }
-        $this->generate();
+        return $this->generate();
     }
     
     /**
