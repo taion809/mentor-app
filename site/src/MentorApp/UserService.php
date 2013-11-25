@@ -11,7 +11,6 @@ namespace MentorApp;
  * Class to interface with the data store and perform the necessary actions on 
  * the provided User instance
  *
- * @method \MentorApp\User retrieve(\MentorApp\User $user)
  */
 class UserService
 {
@@ -166,6 +165,7 @@ class UserService
      * Delete the user data from the data store
      *
      * @param string id id of the user to be deleted
+     * @return boolean
      */
     public function delete($id)
     {
@@ -174,9 +174,13 @@ class UserService
             $statement = $this->db->prepare($deleteQuery);
             $statement->execute(array('id' => $id));
             $this->deleteSkills($id);
+            if ($statement->rowCount < 1) {
+                return false;
+            }
         } catch (\PDOException $e) {
             // log it
         }
+        return true;
     }
 
     /**
