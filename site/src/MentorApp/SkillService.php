@@ -8,9 +8,9 @@
 namespace MentorApp;
 
 /**
- * Class to interface with the data store and perform necessary actions with Tag objects
+ * Class to interface with the data store and perform necessary actions with Skill objects
  */
-class TagService
+class SkillService
 {
     /**
      * Use the Hash trait to take care of hash generation
@@ -33,10 +33,10 @@ class TagService
     }
 
     /**
-     * Fetches a tag from the data store
+     * Fetches a skill from the data store
      *
-     * @param string $name Name of the tag to be retrieved
-     * @return Tag The retrieved tag
+     * @param string $name Name of the skill to be retrieved
+     * @return \MentorApp\Skill The retrieved Skill
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
@@ -47,7 +47,7 @@ class TagService
         }
 
         try {
-            $query = 'SELECT * FROM `tag` WHERE `name` = :name';
+            $query = 'SELECT * FROM `skill` WHERE `name` = :name';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':name' => $name]);
 
@@ -57,23 +57,23 @@ class TagService
 
             $fields = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-            $tag = new Tag();
-            $tag->id = $fields['id'];
-            $tag->name = $fields['name'];
-            $tag->added = new \DateTime($fields['added']);
-            $tag->authorized = ($fields['authorized'] == 1);
+            $skill = new Skill();
+            $skill->id = $fields['id'];
+            $skill->name = $fields['name'];
+            $skill->added = new \DateTime($fields['added']);
+            $skill->authorized = ($fields['authorized'] == 1);
         } catch (\PDOException $e) {
             // log the exception
             return null;
         }
-        return $tag;
+        return $skill;
     }
 
     /**
-     * Searches for a tag based on a partial textual match
+     * Searches for a skill based on a partial textual match
      *
      * @param string $term The term to search for
-     * @return array The matching tags
+     * @return array The matching skill
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
@@ -84,7 +84,7 @@ class TagService
         }
 
         try {
-            $query = 'SELECT * FROM `tag` WHERE `name` LIKE "%:term%"';
+            $query = 'SELECT * FROM `skill` WHERE `name` LIKE "%:term%"';
             $stmt = $this->db->prepare($query);
             $stmt->execute([':term' => $term]);
             if (!$stmt->rowCount()) {
@@ -93,43 +93,43 @@ class TagService
             $return = [];
 
             while ($row = $stmt->fetch(\PDO::FETCH_ASSOC)) {
-                $tag = new Tag();
-                $tag->id = $row['id'];
-                $tag->name = $row['name'];
-                $tag->added = new \DateTime($row['added']);
-                $tag->authorized = ($row['authorized'] == 1);
+                $skill = new Skill();
+                $skill->id = $row['id'];
+                $skill->name = $row['name'];
+                $skill->added = new \DateTime($row['added']);
+                $skill->authorized = ($row['authorized'] == 1);
 
-                $tags[] = $tag;
+                $skills[] = $skill;
             }
         } catch (\PDOException $e) {
             // log exception
             return [];
         }
-            return $tags;
+            return $skills;
     }
 
     /**
-     * Saves a tag to the database
+     * Saves a skill to the database
      *
-     * @param Tag $tag The tag to save
-     * @return TagService
+     * @param \MentorApp\Skill $skill The skill to save
+     * @return boolean
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
-    public function save(Tag $tag)
+    public function save(Skill $skill)
     {
-        if (empty($tag->name)) {
-            throw new \InvalidArgumentException('Tag is missing a name');
+        if (empty($skill->name)) {
+            throw new \InvalidArgumentException('Skill is missing a name');
         }
-        if ($tag->id === null) {
-            $tag->id = $this->generate();
+        if ($skill->id === null) {
+            $skill->id = $this->generate();
         }
-        $id = $tag->id;
-        $name = $tag->name;
-        $authorized = $tag->authorized ? 1 : 0;
-        $added = $tag->added;
+        $id = $skill->id;
+        $name = $skill->name;
+        $authorized = $skill->authorized ? 1 : 0;
+        $added = $skill->added;
         try {
-            $query = 'INSERT INTO `tag` (
+            $query = 'INSERT INTO `skill` (
                 `id`,
                 `name`,
                 `authorized`,
@@ -153,9 +153,9 @@ class TagService
     }
 
     /**
-     * Method to delete an existing tag
+     * Method to delete an existing skill
      *
-     * @param string $id the ID of the tag
+     * @param string $id the ID of the skill
      * @return boolean
      */
     public function delete($id)
@@ -164,7 +164,7 @@ class TagService
             return false;
         }
         try {
-            $query = "DELETE FROM tags WHERE id = :id";
+            $query = "DELETE FROM `skill` WHERE id = :id";
             $statement = $this->db->prepare($query);
             $statement->execute(array('id' => $id));
             $rowCount = $statement->rowCount();
@@ -187,7 +187,7 @@ class TagService
     public function exists($id)
     {
         try {
-            $query = "SELECT id FROM `tags` WHERE id = :id";
+            $query = "SELECT id FROM `skill` WHERE id = :id";
             $statement = $this->db->prepare($query);
             $statement->execute(['id' => $id]);
             if($statement->rowCount() > 0) {

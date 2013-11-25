@@ -7,7 +7,7 @@
 
 namespace MentorApp;
 
-class TagServiceTest extends \PHPUnit_Framework_TestCase
+class SkillServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * Setup mock dependencies for the test
@@ -29,11 +29,11 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Test to ensure that the retrieve method returns a populate
-     * tag object when a tag matching the search term exists
+     * skill object when a skill matching the search term exists
      */
-    public function testRetrieveReturnsPopulatedTagEntity()
+    public function testRetrieveReturnsPopulatedSkillEntity()
     {
-        $tagData = array(
+        $skillData = array(
             'id' => null,
             'name' => 'Testing',
             'added' => '2013-10-01 09:34:03',
@@ -48,17 +48,17 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->statement->expects($this->once())
             ->method('fetch')
-            ->will($this->returnValue($tagData));
+            ->will($this->returnValue($skillData));
 
         $this->db->expects($this->once())
             ->method('prepare')
             ->will($this->returnValue($this->statement));
 
-        $service = new TagService($this->db);
-        $tag = $service->retrieve($tagData['name']);
+        $service = new SkillService($this->db);
+        $skill = $service->retrieve($skillData['name']);
 
-        $this->assertEquals($tagData['name'], $tag->name);
-        $this->assertTrue($tag->authorized);
+        $this->assertEquals($skillData['name'], $skill->name);
+        $this->assertTrue($skill->authorized);
     }
 
     /**
@@ -68,15 +68,15 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
     public function testRetrieveWithEmptyNameParamThrowsException()
     {
         $this->setExpectedException('\\InvalidArgumentException');
-        $service = new TagService($this->db);
+        $service = new SkillService($this->db);
         $service->retrieve('');
     }
 
     /**
-     * Test to ensure that null is return if no tag can be found by with
+     * Test to ensure that null is return if no skill can be found by with
      * the search term
      */
-    public function testRetrieveReturnsNullIfTagNotFound()
+    public function testRetrieveReturnsNullIfSkillNotFound()
     {
         $this->statement->expects($this->once())
             ->method('rowCount')
@@ -86,26 +86,26 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ->method('prepare')
             ->will($this->returnValue($this->statement));
 
-        $service = new TagService($this->db);
+        $service = new SkillService($this->db);
 
-        $this->assertNull($service->retrieve('Tag Does Not Exist'));
+        $this->assertNull($service->retrieve('Skill Does Not Exist'));
     }
 
     /**
      * Test to ensure that a search with the correct term will return
-     * the approriate Tag objects
+     * the approriate Skill objects
      */
-    public function testSearchByTermReturnsArrayOfTagsMatchingTerm()
+    public function testSearchByTermReturnsArrayOfSkillMatchingTerm()
     {
-        $tagData = array(
-            array('id' => 'abc123def4', 'name' => 'Test Tag 1', 'added' => '2013-10-01', 'authorized' => 1),
-            array('id' => 'abad1f567e', 'name' => 'Test Tag 2', 'added' => '2013-10-02', 'authorized' => 1),
-            array('id' => 'fe12cdab7e', 'name' => 'Test Tag 3', 'added' => '2013-10-03', 'authorized' => 0),
+        $skillData = array(
+            array('id' => 'abc123def4', 'name' => 'Test Skill 1', 'added' => '2013-10-01', 'authorized' => 1),
+            array('id' => 'abad1f567e', 'name' => 'Test Skill 2', 'added' => '2013-10-02', 'authorized' => 1),
+            array('id' => 'fe12cdab7e', 'name' => 'Test Skill 3', 'added' => '2013-10-03', 'authorized' => 0),
         );
 
         $this->statement->expects($this->once())
             ->method('rowCount')
-            ->will($this->returnValue(count($tagData)));
+            ->will($this->returnValue(count($skillData)));
 
         $this->db->expects($this->once())
             ->method('prepare')
@@ -113,23 +113,23 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->statement->expects($this->at(2))
             ->method('fetch')
-            ->will($this->returnValue($tagData[0]));
+            ->will($this->returnValue($skillData[0]));
 
         $this->statement->expects($this->at(3))
             ->method('fetch')
-            ->will($this->returnValue($tagData[1]));
+            ->will($this->returnValue($skillData[1]));
 
         $this->statement->expects($this->at(4))
             ->method('fetch')
-            ->will($this->returnValue($tagData[2]));
+            ->will($this->returnValue($skillData[2]));
 
-        $service = new TagService($this->db);
-        $tags = $service->searchByTerm('Test');
+        $service = new SkillService($this->db);
+        $skills = $service->searchByTerm('Test');
 
-        $this->assertCount(count($tagData), $tags);
-        $this->assertEquals($tagData[0]['name'], $tags[0]->name);
-        $this->assertEquals($tagData[1]['id'], $tags[1]->id);
-        $this->assertEquals($tagData[2]['id'], $tags[2]->id);
+        $this->assertCount(count($skillData), $skills);
+        $this->assertEquals($skillData[0]['name'], $skills[0]->name);
+        $this->assertEquals($skillData[1]['id'], $skills[1]->id);
+        $this->assertEquals($skillData[2]['id'], $skills[2]->id);
     }
 
     /**
@@ -139,15 +139,15 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
     public function testSearchByTermThrowsExceptionForEmptySearchTerm()
     {
         $this->setExpectedException('\\InvalidArgumentException');
-        $service = new TagService($this->db);
+        $service = new SkillService($this->db);
         $service->searchByTerm('');
     }
 
     /**
      * Test to ensure that an empty array is return when no matching
-     * tags are found
+     * skills are found
      */
-    public function testSearchByTermReturnsEmptyArrayWhenNoMatchingTagsFound()
+    public function testSearchByTermReturnsEmptyArrayWhenNoMatchingSkillsFound()
     {
         $this->statement->expects($this->once())
             ->method('rowCount')
@@ -157,37 +157,37 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ->method('prepare')
             ->will($this->returnValue($this->statement));
 
-        $service = new TagService($this->db);
-        $tags = $service->searchByTerm('Unused Term');
-        $this->assertEmpty($tags);
+        $service = new SkillService($this->db);
+        $skills = $service->searchByTerm('Unused Term');
+        $this->assertEmpty($skills);
     }
 
     /**
-     * Test to ensure that tag passed in without a name throws an 
+     * Test to ensure that skills passed in without a name throws an 
      * InvalidArgumentException
      */ 
-    public function testSaveThrowsExceptionForNamelessTag()
+    public function testSaveThrowsExceptionForNamelessSkill()
     {
-        $tag = $this->getMock('\\MentorApp\\Tag');
-        $tag->name = '';
+        $skill = $this->getMock('\\MentorApp\\Skill');
+        $skill->name = '';
 
         $this->setExpectedException('\\InvalidArgumentException');
-        $service = new TagService($this->db);
-        $service->save($tag);
+        $service = new SkillService($this->db);
+        $service->save($skill);
     }
 
     /**
-     * Test to ensure the save method functions properly when the Tag has an ID set
+     * Test to ensure the save method functions properly when the Skill has an ID set
      */
     public function testEnsureSaveMethodUpdatesTable()
     {
-        $tag = new Tag();
-        $tag->id = 'ab12e4bb12';
-        $tag->name = 'PHP';
-        $tag->added = '2013-11-18 20:58:12';
-        $tag->authorized = true;
+        $skill = new Skill();
+        $skill->id = 'ab12e4bb12';
+        $skill->name = 'PHP';
+        $skill->added = '2013-11-18 20:58:12';
+        $skill->authorized = true;
 
-        $query = 'INSERT INTO `tag` (
+        $query = 'INSERT INTO `skill` (
                 `id`,
                 `name`,
                 `authorized`,
@@ -207,25 +207,25 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
 
         $this->statement->expects($this->once())
             ->method('execute')
-            ->with(['id' => $tag->id, 'name' => $tag->name, 'authorized' => $tag->authorized, 'added' => $tag->added])
+            ->with(['id' => $skill->id, 'name' => $skill->name, 'authorized' => $skill->authorized, 'added' => $skill->added])
             ->will($this->returnValue($this->statement));
-        $tagService = new TagService($this->db);
-        $savedTag = $tagService->save($tag);
-        $this->assertTrue($savedTag, 'Save method returned false');
+        $skillService = new SkillService($this->db);
+        $savedSkill = $skillService->save($skill);
+        $this->assertTrue($savedSkill, 'Save method returned false');
     }
 
     /**
-     * Test to ensure that a tag with no id has an ID created and the save
+     * Test to ensure that a skill with no id has an ID created and the save
      * completes correctly
      */
     public function testEnsureThatNewObjectIsCreatedWithNoIdValue()
     {
-        $tag = new Tag();
-        $tag->name = 'OOP';
-        $tag->authorized = true;
-        $tag->added = '2013-11-18 21:18:30';
+        $skill = new Skill();
+        $skill->name = 'OOP';
+        $skill->authorized = true;
+        $skill->added = '2013-11-18 21:18:30';
 
-        $query = 'INSERT INTO `tag` (
+        $query = 'INSERT INTO `skill` (
                 `id`,
                 `name`,
                 `authorized`,
@@ -240,7 +240,7 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ';
         $this->db->expects($this->at(0))
             ->method('prepare')
-            ->with('SELECT id FROM `tags` WHERE id = :id')
+            ->with('SELECT id FROM `skill` WHERE id = :id')
             ->will($this->returnValue($this->statement)); 
         $this->db->expects($this->at(1))
             ->method('prepare')
@@ -258,24 +258,24 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ->method('rowCount')
             ->will($this->returnValue(0));
 
-        $tagService = new TagService($this->db);
-        $tagReturn = $tagService->save($tag);
-        $this->assertTrue($tagReturn);
+        $skillService = new SkillService($this->db);
+        $skillReturn = $skillService->save($skill);
+        $this->assertTrue($skillReturn);
     }
 
     /**
      * Test to ensure that when a \PDO Exception is thrown in save when
-     * updating a tag entry returns false
+     * updating a skill entry returns false
      */
     public function testSaveReturnsFalseOnPDOException()
     {
-        $tag = new Tag();
-        $tag->id = '123edf23ea';
-        $tag->name = 'TDD';
-        $tag->authorized = false;
-        $tag->added = '2013-11-19 13:56:12';
+        $skill = new Skill();
+        $skill->id = '123edf23ea';
+        $skill->name = 'TDD';
+        $skill->authorized = false;
+        $skill->added = '2013-11-19 13:56:12';
 
-        $query = 'INSERT INTO `tag` (
+        $query = 'INSERT INTO `skill` (
                 `id`,
                 `name`,
                 `authorized`,
@@ -297,9 +297,9 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
             ->method('execute')
             ->will($this->throwException(new \PDOException));
             
-        $tagService = new TagService($this->db);
-        $tagReturn = $tagService->save($tag);
-        $this->assertFalse($tagReturn);
+        $skillService = new SkillService($this->db);
+        $skillReturn = $skillService->save($skill);
+        $this->assertFalse($skillReturn);
     }
 
     /**
@@ -311,16 +311,16 @@ class TagServiceTest extends \PHPUnit_Framework_TestCase
      */
     public function testEnsureRuntimeExceptionIsThrownOnPDOExceptionInExists()
     {
-        $tag = new Tag();
-        $tag->name = 'TDD';
-        $tag->authorized = true;
-        $tag->added = '2013-11-18 21:25:30';
+        $skill = new Skill();
+        $skill->name = 'TDD';
+        $skill->authorized = true;
+        $skill->added = '2013-11-18 21:25:30';
 
         $this->db->expects($this->once())
             ->method('prepare')
             ->will($this->throwException(new \PDOException));
 
-        $tagService = new TagService($this->db);
-        $tagReturn = $tagService->save($tag);
+        $skillService = new SkillService($this->db);
+        $skillReturn = $skillService->save($skill);
     }
 }
