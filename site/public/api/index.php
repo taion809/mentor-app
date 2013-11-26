@@ -21,7 +21,7 @@ $app->get('/v1/user/:id', function() use ($app) {
     }
     $userService = new \MentorApp\UserService($app->db);
     $userResponse = $userService->retrieve($id);
-    $tagService = new \MentorApp\TagService($app->db);
+    $skillService = new \MentorApp\SkillService($app->db);
     if ($userResponse === null) {
         http_response_code(404);
         return;
@@ -40,22 +40,25 @@ $app->get('/v1/user/:id', function() use ($app) {
     $response['twitter_handle'] = htmlspecialchars($userResponse->twitterHandle);
     $response['mentor_available'] = htmlspecialchars($userResponse->mentorAvailable);
     $response['apprentice_available'] = htmlspecialchars($userResponse->apprenticeAvailable);
-    // retrieve tag instances for the tag ids provided for teaching
-    foreach ($userResponse->teachingSkills as $teaching_skill) {
-        $task = $taskService->retrieve($teaching_skill);
-        $response['teaching_skills'][]['self'] = '';
-        $response['teaching_skills'][]['id'] = htmlspecialchars($task->id);
-        $response['teaching_skills'][]['name'] = htmlspecialchars($task->name);
-        $response['teaching_skills'][]['added'] = htmlspecialchars($task->added); 
-    }
-
-    foreach ($userResponse->learningSkills as $learning_skill) {
-        $task = $taskService->retrieve($learning_skill);
+    // retrieve skill instances for the skill ids provided for teaching
+    $learningSkills = $skillService->retrieveByIds($userResponse->learningSkills);
+    $teachingSkills = $skillService->retrieveByIds($userResponse->teachingSkills);
+    $response['learning_skills'] = array();
+    $response['teaching_skills'] = array();
+    // Cut down the queries, but I still don't like this, especially for skills
+    // Almost feels like it needs some sort of Object specific formatter or something.
+    foreach ($learningSkills as $learningSkill) {
         $response['learning_skills'][]['self'] = '';
-        $response['learning_skills'][]['id'] = htmlspecialchars($task->id);
-        $response['learning_skills'][]['name'] = htmlspecialchars($task->name);
-        $response['learning_skills'][]['added'] = htmlspecialchars($task->added);
+        $response['learning_skills'][]['id'] = $learningSkill->id;
+        $response['learning_skills'][]['name'] = $learningSkill->name;
+        $response['learning_skills'][]['added'] = $learningSkill->added;
     }
+    foreach ($teachingSkills as $teachingSkill) {
+        $response['teaching_skills'][]['self'] = '';
+        $response['teaching_skills'][]['id'] = $teachingSkill->id;
+        $response['teaching_skills'][]['name'] = $teachingSkill->name;
+        $response['teaching_skills'][]['added'] = $teachingSkill->name;
+    } 
     http_response_code(200); 
     print json_encode($response); 
 });

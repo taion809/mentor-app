@@ -35,21 +35,21 @@ class SkillService
     /**
      * Fetches a skill from the data store
      *
-     * @param string $name Name of the skill to be retrieved
+     * @param string $id Id of the skill to be retrieved
      * @return \MentorApp\Skill The retrieved Skill
      * @throws \InvalidArgumentException
      * @throws \PDOException
      */
-    public function retrieve($name)
+    public function retrieve($id)
     {
-        if (empty($name)) {
-            throw new \InvalidArgumentException('Name cannot be empty');
+        if (empty($id)) {
+            throw new \InvalidArgumentException('ID cannot be empty');
         }
 
         try {
-            $query = 'SELECT * FROM `skill` WHERE `name` = :name';
+            $query = 'SELECT * FROM `skill` WHERE `id` = :id';
             $stmt = $this->db->prepare($query);
-            $stmt->execute([':name' => $name]);
+            $stmt->execute([':id' => $id]);
 
             if (!$stmt->rowCount()) {
                 return null;
@@ -67,6 +67,34 @@ class SkillService
             return null;
         }
         return $skill;
+    }
+
+    /**
+     * Method to retrieve an array of skills from an array of IDs that are passed in
+     *
+     * @param array $ids an array of the ids corresponding to skills
+     * @return array an array of skill objects
+     */
+    public function retrieveByIds(Array $ids)
+    {
+        $skills = array();
+        $inValue = '\'' . implode("', '", $ids) . '\'';
+        try {
+            $query = "SELECT * FROM `skills` WHERE `id` IN (:in)";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['in' => $inValue]);
+            while($row = $statement->fetch()) {
+                $skill = new Skill();
+                $skill->id = $row['id'];
+                $skill->name = $row['name'];
+                $skill->authorized = $row['authorized'];
+                $skill->added = $row['added'];
+                $skills[] = $skill;
+            }
+        } catch(\PDOException $e) {
+            // log it
+        }
+        return $skills;
     }
 
     /**
