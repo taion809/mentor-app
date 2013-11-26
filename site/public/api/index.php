@@ -26,25 +26,11 @@ $app->get('/v1/user/:id', function() use ($app) {
         http_response_code(404);
         return;
     }
-
-    $response = array();
-    $response['teaching_skills'] = array();
-    $response['learning_skills'] = array();
-    $response['self'] = '';
-    $response['id'] = htmlspecialchars($userResponse->id);
-    $response['first_name'] = htmlspecialchars($userResponse->firstName);
-    $response['last_name'] = htmlspecialchars($userResponse->lastName);
-    $response['email'] = htmlspecialchars($userResponse->email);
-    $response['github_handle'] = htmlspecialchars($userResponse->githubHandle);
-    $response['irc_nick'] = htmlspecialchars($userResponse->ircNick);
-    $response['twitter_handle'] = htmlspecialchars($userResponse->twitterHandle);
-    $response['mentor_available'] = htmlspecialchars($userResponse->mentorAvailable);
-    $response['apprentice_available'] = htmlspecialchars($userResponse->apprenticeAvailable);
+    $userFormatter = new UserArrayFormatter($userResponse);
+    $response = $userFormatter->format();
     // retrieve skill instances for the skill ids provided for teaching
     $learningSkills = $skillService->retrieveByIds($userResponse->learningSkills);
     $teachingSkills = $skillService->retrieveByIds($userResponse->teachingSkills);
-    $response['learning_skills'] = array();
-    $response['teaching_skills'] = array();
     // Cut down the queries, but I still don't like this, especially for skills
     // Almost feels like it needs some sort of Object specific formatter or something.
     foreach ($learningSkills as $learningSkill) {
