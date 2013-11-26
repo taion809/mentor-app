@@ -95,8 +95,6 @@ class UserService
      * Save the User record, a fully populate user instance should be 
      * passed in and acted upon by the service. 
      *
-     * @todo Create a check for the ID pattern match
-     * @todo Interact with the relational table for tags/skills
      * @param \MentorApp\User user user instance
      * @return boolean indication of whether the user was saved correctly
      */
@@ -187,19 +185,19 @@ class UserService
      * Method to handle the saving of skills to a specific user
      *
      * @param string user_id id of the user
-     * @param array tags an array of tag instances to attach to the user
+     * @param array skills an array of skill instances to attach to the user
      * @param string type the type of skills to be saved 
      */
-    private function saveSkills($user_id, array $tags, $type)
+    private function saveSkills($user_id, array $skills, $type)
     {
         if (!$this->validSkillsType($type)) {
             return false;
         }
         $query = "INSERT INTO {$type}_skills (id_user, id_tag) VALUES (:user, :tag)";
         $statement = $this->db->prepare($query);
-        foreach ($tags as $tag) {
+        foreach ($skills as $skill) {
             try {
-                $statement->execute(array('user' => $user_id, 'tag' => $tag->id));
+                $statement->execute(array('user' => $user_id, 'tag' => $skill->id));
             } catch (\PDOException $e) {
                 //TODO log it
                 // maybe rethrow it and catch it in the create/update methods?

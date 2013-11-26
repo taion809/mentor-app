@@ -2,7 +2,7 @@
 
 use Phinx\Migration\AbstractMigration;
 
-class CreateTags extends AbstractMigration
+class CreateSkills extends AbstractMigration
 {
     /**
      * Change Method.
@@ -23,7 +23,7 @@ class CreateTags extends AbstractMigration
     public function up()
     {
         $this->execute('
-            create table `tag` (
+            create table `skill` (
                 `id` varchar(15) not null,
                 `name` varchar(255) not null unique,
                 `authorized` tinyint(1) not null default 0,
@@ -39,6 +39,6 @@ class CreateTags extends AbstractMigration
      */
     public function down()
     {
-        $this->execute('drop table tag');
+        $this->execute('drop table skill');
     }
 }

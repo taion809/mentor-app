@@ -76,20 +76,20 @@ class User
     /**
      * Method to populate the array of teaching skills for the User
      *
-     * @param \MentorApp\Tag tag A tag instance representing a single skill
+     * @param \MentorApp\Skill A skill instance representing a single skill
      */
-    public function addTeachingSkill(\MentorApp\Tag $tag)
+    public function addTeachingSkill(\MentorApp\Skill $skill)
     {
-        $this->teachingSkills[] = $tag;
+        $this->teachingSkills[] = $skill;
     }
 
     /**
      * Method to populate the array of learning skills for the User
      *
-     * @param \MentorApp\Tag tag A tag instance representing a single skill
+     * @param \MentorApp\Skill A skill instance representing a single skill
      */
-    public function addLearningSkill(\MentorApp\Tag $tag)
+    public function addLearningSkill(\MentorApp\Skill $skill)
     {
-        $this->learningSkills[] = $tag;
+        $this->learningSkills[] = $skill;
     }
 }
