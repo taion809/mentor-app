@@ -11,6 +11,7 @@ namespace MentorApp;
 trait Hash {
 
     /**
+     * Trait method to create a random hash value for an ID
      * @return string
      */
     public function generate()
@@ -25,7 +26,7 @@ trait Hash {
         if (!$this->exists($hash)) {
             return $hash;
         }
-        $this->generate();
+        return $this->generate();
     }
     
     /**
