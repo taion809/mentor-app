@@ -82,6 +82,95 @@ class PartnershipManager
     }
 
     /**
+     * Retrieves the information about a partnership by id
+     *
+     * @param string $id identifier for the partnership
+     * @return \MentorApp\Partnership
+     */
+    public function retrieveById($id)
+    {
+        if (!$this->validateHash($id)) { 
+            return null;
+        }
+
+        try {
+            $query = "SELECT * FROM partnerships WHERE id = :id";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['id' => $id]);
+            $row = $statement->fetch();
+            $partnership = new Partnership();
+            $partnership->id = $row['id'];
+            $partnership->mentor = $row['id_mentor'];
+            $partnership->apprentice = $row['id_apprentice'];
+            return $partnership;
+        } catch(\PDOException $e) {
+            // log it
+            return null;
+        }
+    }
+
+    /**
+     * Retrieve a partnership searching for matching records where the provided
+     * id matches a mentor
+     *
+     * @param string $mentorId
+     * @return array an array of Partnership instances
+     */
+    public function retrieveByMentor($mentorId)
+    {
+        if (!$this->validateHash($mentorId)) {
+            return [];
+        }
+
+        $partnerships = [];
+        try {
+            $query = "SELECT * FROM `partnerships` WHERE id_mentor = :mentor_id";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['mentor_id' => $mentorId]);
+            while ($row = $statement->fetch()) {
+                $partnership = new Partnership();
+                $partnership->id = $row['id'];
+                $partnership->mentor = $row['id_mentor'];
+                $partnership->apprentice = $row['id_apprentice'];
+                $partnerships[] = $partnership;
+            }
+        } catch (\PDOException $e) {
+            // log it
+        }
+        return $partnerships;
+    }
+
+    /**
+     * Retrieve a group partnerships searching by apprentice
+     *
+     * @param string $apprenticeId
+     * @return array
+     */
+    public function retrieveByApprentice($apprenticeId)
+    {
+        if (!$this->validateHash($apprenticeId)) {
+            return [];
+        }
+
+        $partnerships = [];
+        try {
+            $query = "SELECT * FROM `partnerships` WHERE id_apprentice = :apprentice_id";
+            $statement = $this->db->prepare($query);
+            $statement->execute(['apprentice_id' => $apprenticeId]);
+            while ($row = $statement->fetch())
+            {
+                $partnership = new Partnership();
+                $partnership->id = $row['id'];
+                $partnership->mentor = $row['id_mentor'];
+                $partnership->apprentice = $row['id_apprentice'];
+                $partnerships[] = $partnership;
+            }
+        } catch(\PDOException $e) {
+            // log it
+        }
+        return $partnerships;
+    } 
+    /**
      * Method to fulfill the abstract Hash trait method and verify the id
      * being generated doesn't already exist
      *
