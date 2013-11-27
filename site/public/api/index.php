@@ -26,25 +26,20 @@ $app->get('/v1/user/:id', function() use ($app) {
         http_response_code(404);
         return;
     }
-    $userFormatter = new UserArrayFormatter($userResponse);
-    $response = $userFormatter->format();
+    $userSerializer = new UserArraySerializer();
+    $skillSerializer = new SkillArraySerializer();
+    $response = $userSerializer->toArray($userResponse);
+
     // retrieve skill instances for the skill ids provided for teaching
     $learningSkills = $skillService->retrieveByIds($userResponse->learningSkills);
     $teachingSkills = $skillService->retrieveByIds($userResponse->teachingSkills);
-    // Cut down the queries, but I still don't like this, especially for skills
-    // Almost feels like it needs some sort of Object specific formatter or something.
     foreach ($learningSkills as $learningSkill) {
-        $response['learning_skills'][]['self'] = '';
-        $response['learning_skills'][]['id'] = $learningSkill->id;
-        $response['learning_skills'][]['name'] = $learningSkill->name;
-        $response['learning_skills'][]['added'] = $learningSkill->added;
+        $response['learningSkills'][] = $skillSerializer->toArray($learningSkill);
     }
     foreach ($teachingSkills as $teachingSkill) {
-        $response['teaching_skills'][]['self'] = '';
-        $response['teaching_skills'][]['id'] = $teachingSkill->id;
-        $response['teaching_skills'][]['name'] = $teachingSkill->name;
-        $response['teaching_skills'][]['added'] = $teachingSkill->name;
+        $response['teachingSkills'][] - $skillSerializer->toArray($teachingSkill);
     } 
+
     http_response_code(200); 
     print json_encode($response); 
 });
