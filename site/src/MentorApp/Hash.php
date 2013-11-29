@@ -28,6 +28,20 @@ trait Hash {
         }
         return $this->generate();
     }
+
+    /**
+     * Validate the hash based on the pattern it's created with
+     *
+     * @param string $id identifer to validate
+     * @return boolean
+     */
+    public function validateHash($id)
+    {
+        if (preg_match('/^[0-9a-f]{10}$/', $id) && is_string($id)) {
+            return true;
+        }
+        return false;
+    }
     
     /**
      * @param $id string

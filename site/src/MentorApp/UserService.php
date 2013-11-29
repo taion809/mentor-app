@@ -10,7 +10,6 @@ namespace MentorApp;
 /**
  * Class to interface with the data store and perform the necessary actions on 
  * the provided User instance
- *
  */
 class UserService
 {
@@ -66,7 +65,7 @@ class UserService
      */
     public function retrieve($id)
     {
-        if (!is_string($id) || $id == '') {
+        if (!$this->validateHash($id)) {
             return null;
         }
 
@@ -301,7 +300,7 @@ class UserService
      */
     public function exists($id)
     {
-        if ($id === '' || !preg_match('/^[A-Fa-f0-9]{10}$/', $id)) {
+        if ($id === '' || !$this->validateHash($id)) {
             throw new \RuntimeException('Oh noes! Something went wrong and we weren\'t able to fix it');
         }
         try {
