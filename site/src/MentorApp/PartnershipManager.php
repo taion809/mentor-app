@@ -94,7 +94,7 @@ class PartnershipManager
         }
 
         try {
-            $query = "SELECT * FROM partnerships WHERE id = :id";
+            $query = "SELECT * FROM partnership WHERE id = :id";
             $statement = $this->db->prepare($query);
             $statement->execute(['id' => $id]);
             $row = $statement->fetch();
@@ -124,7 +124,7 @@ class PartnershipManager
 
         $partnerships = [];
         try {
-            $query = "SELECT * FROM `partnerships` WHERE id_mentor = :mentor_id";
+            $query = "SELECT * FROM `partnership` WHERE id_mentor = :mentor_id";
             $statement = $this->db->prepare($query);
             $statement->execute(['mentor_id' => $mentorId]);
             while ($row = $statement->fetch()) {
@@ -154,7 +154,7 @@ class PartnershipManager
 
         $partnerships = [];
         try {
-            $query = "SELECT * FROM `partnerships` WHERE id_apprentice = :apprentice_id";
+            $query = "SELECT * FROM `partnership` WHERE id_apprentice = :apprentice_id";
             $statement = $this->db->prepare($query);
             $statement->execute(['apprentice_id' => $apprenticeId]);
             while ($row = $statement->fetch())
