@@ -19,15 +19,18 @@ $app->get('/v1/user/:id', function() use ($app) {
         http_response_code(404);
         return;
     }
+    $response = array();
     $userService = new \MentorApp\UserService($app->db);
     $userResponse = $userService->retrieve($id);
     $skillService = new \MentorApp\SkillService($app->db);
+    $partnershipManager = new \MentorApp\PartnershipManager($app->db);
     if ($userResponse === null) {
         http_response_code(404);
         return;
     }
     $userSerializer = new UserArraySerializer();
     $skillSerializer = new SkillArraySerializer();
+    $partnershipSerializer = new PartnershipArraySerializer();
     $response = $userSerializer->toArray($userResponse);
 
     // retrieve skill instances for the skill ids provided for teaching
@@ -38,7 +41,13 @@ $app->get('/v1/user/:id', function() use ($app) {
     }
     foreach ($teachingSkills as $teachingSkill) {
         $response['teachingSkills'][] - $skillSerializer->toArray($teachingSkill);
-    } 
+    }
+
+    $mentorships = $partnershipManager->retrieveByMentor($id);
+    $apprenticeships = $partnershipManager->retrieveByApprentice($id);
+    $response['partnerships'] = array();
+    $response['partnerships']['mentoring'] = $partnershipSerializer->fromArray($mentorships);
+    $response['partnerships']['apprencting'] = $partnershipSerializer->fromArray($apprenticeships); 
 
     http_response_code(200); 
     print json_encode($response); 
