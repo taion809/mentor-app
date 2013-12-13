@@ -14,12 +14,12 @@ class Partnership
     public $id;
 
     /**
-     * @var \MentorApp\User $mentor identifier for the Mentor
+     * @var string $mentor identifier for the Mentor
      */
     public $mentor;
 
     /**
-     * @var \MentorApp\User $apprentice identifier for the apprentice
+     * @var string $apprentice identifier for the apprentice
      */
     public $apprentice;
 }
