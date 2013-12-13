@@ -53,7 +53,7 @@ $app->get('/v1/user/:id', function() use ($app) {
     print json_encode($response); 
 });
 
-$app->delete('/v1/user/:id, function() use ($app) {
+$app->delete('/v1/user/:id', function() use ($app) {
     if (!preg_match('/^[0-9a-f]{10}$/', $id)) {
         http_response_code(404);
         return;
@@ -70,7 +70,7 @@ $app->delete('/v1/user/:id, function() use ($app) {
 $app->post('/v1/user', function use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
-    $taskService = new \MentorApp\TaskService($app->db);
+    $taskService = new \MentorApp\SkillService($app->db);
     $user->firstName = filter_var($_POST['first_name'], FILTER_SANITIZE_STRING);
     $user->lastName = filter_var($_POST['last_name'], FILTER_SANITIZE_STRING);
     $user->email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
@@ -105,7 +105,7 @@ $app->post('/v1/user', function use ($app) {
 $app->put('/vi/user', function use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
-    $taskService = new \MentorApp\TaskService($app->db);
+    $taskService = new \MentorApp\SkillService($app->db);
     $user->firstName = filter_var($_POST['first_name'], FILTER_SANITIZE_STRING);
     $user->lastName = filter_var($_POST['last_name'], FILTER_SANITIZE_STRING);
     $user->email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
