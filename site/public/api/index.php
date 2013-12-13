@@ -15,7 +15,8 @@ $app->db = new \PDO(
 
 $app->get('/v1/user/:id', function() use ($app) {
     // add authentication, authz shouldn't matter here
-    if (!preg_match('/^[0-9a-f]{10}$/', $id)) {
+    $hashValidator = new \MentorApp\HashValidator();
+    if (!$hashValidator->validate($id)) {
         http_response_code(404);
         return;
     }
@@ -40,7 +41,7 @@ $app->get('/v1/user/:id', function() use ($app) {
         $response['learningSkills'][] = $skillSerializer->toArray($learningSkill);
     }
     foreach ($teachingSkills as $teachingSkill) {
-        $response['teachingSkills'][] - $skillSerializer->toArray($teachingSkill);
+        $response['teachingSkills'][] = $skillSerializer->toArray($teachingSkill);
     }
 
     $mentorships = $partnershipManager->retrieveByMentor($id);
@@ -54,7 +55,8 @@ $app->get('/v1/user/:id', function() use ($app) {
 });
 
 $app->delete('/v1/user/:id', function() use ($app) {
-    if (!preg_match('/^[0-9a-f]{10}$/', $id)) {
+    $hashValidator = new \MentorApp\HashValidator();
+    if (!$hashValidator->validate($id)) {
         http_response_code(404);
         return;
     }
