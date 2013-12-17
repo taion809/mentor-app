@@ -73,23 +73,25 @@ $app->post('/v1/user', function use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
     $taskService = new \MentorApp\SkillService($app->db);
-    $user->firstName = filter_var($_POST['first_name'], FILTER_SANITIZE_STRING);
-    $user->lastName = filter_var($_POST['last_name'], FILTER_SANITIZE_STRING);
-    $user->email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $user->githubHandle = filter_var($_POST['github_handle'], FILTER_SANITIZE_STRING);
-    $user->twitterHandle = filter_var($_POST['twitter_handle'], FILTER_SANITIZE_STRING);
-    $user->ircNick = filter_var($_POST['irc_nick'], FILTER_SANITIZE_STRING);
-    $user->mentorAvailable = ($_POST['mentor_available'] == 1) ? 1 : 0;
-    $user->apprenticeAvailable = $_POST['apprentice_available'] ? 1 : 0;
+    $data = $app->getRequest()->getBody();
+    $dataArray = json_decode($data, true);
+    $user->firstName = filter_var($dataArray['first_name'], FILTER_SANITIZE_STRING);
+    $user->lastName = filter_var($dataArray['last_name'], FILTER_SANITIZE_STRING);
+    $user->email = filter_var($dataArray['email'], FILTER_SANITIZE_EMAIL);
+    $user->githubHandle = filter_var($dataArray['github_handle'], FILTER_SANITIZE_STRING);
+    $user->twitterHandle = filter_var($dataArray['twitter_handle'], FILTER_SANITIZE_STRING);
+    $user->ircNick = filter_var($dataArray['irc_nick'], FILTER_SANITIZE_STRING);
+    $user->mentorAvailable = ($dataArray['mentor_available'] == 1) ? 1 : 0;
+    $user->apprenticeAvailable = $dataArray['apprentice_available'] ? 1 : 0;
     $user->teachingSkills = array();
     $user->learningSkills = array();
-    $user->timezone = filter_var($_POST['timezone'], FILTER_SANITIZE_STRING);
-    foreach ($_POST['teaching_skills'] as $teaching) {
+    $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
+    foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
         $user->teachingSkills[] = $taskService->retrieve($id);
     }
 
-    foreach ($_POST['learning_skills'] as $learning)
+    foreach ($dataArray['learning_skills'] as $learning)
     {
         $id = filter_var($learning, '/^[0-9a-f]{10}$/');
         $user->learningSkills[] = $taskService->retrieve($id);
@@ -108,23 +110,24 @@ $app->put('/vi/user', function use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
     $taskService = new \MentorApp\SkillService($app->db);
-    $user->firstName = filter_var($_POST['first_name'], FILTER_SANITIZE_STRING);
-    $user->lastName = filter_var($_POST['last_name'], FILTER_SANITIZE_STRING);
-    $user->email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-    $user->githubHandle = filter_var($_POST['github_handle'], FILTER_SANITIZE_STRING);
-    $user->twitterHandle = filter_var($_POST['twitter_handle'], FILTER_SANITIZE_STRING);
-    $user->ircNick = filter_var($_POST['irc_nick'], FILTER_SANITIZE_STRING);
-    $user->mentorAvailable = ($_POST['mentor_available'] == 1) ? 1 : 0;
-    $user->apprenticeAvailable = $_POST['apprentice_available'] ? 1 : 0;
+    $data = $app->getRequest()->getBody();
+    $user->firstName = filter_var($dataArray['first_name'], FILTER_SANITIZE_STRING);
+    $user->lastName = filter_var($dataArray['last_name'], FILTER_SANITIZE_STRING);
+    $user->email = filter_var($dataArray['email'], FILTER_SANITIZE_EMAIL);
+    $user->githubHandle = filter_var($dataArray['github_handle'], FILTER_SANITIZE_STRING);
+    $user->twitterHandle = filter_var($dataArray['twitter_handle'], FILTER_SANITIZE_STRING);
+    $user->ircNick = filter_var($dataArray['irc_nick'], FILTER_SANITIZE_STRING);
+    $user->mentorAvailable = ($dataArray['mentor_available'] == 1) ? 1 : 0;
+    $user->apprenticeAvailable = $dataArray['apprentice_available'] ? 1 : 0;
     $user->teachingSkills = array();
     $user->learningSkills = array();
-    $user->timezone = filter_var($_POST['timezone'], FILTER_SANITIZE_STRING);
-    foreach ($_POST['teaching_skills'] as $teaching) {
+    $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
+    foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
         $user->teachingSkills[] = $taskService->retrieve($id);
     }
 
-    foreach ($_POST['learning_skills'] as $learning)
+    foreach ($dataArray['learning_skills'] as $learning)
     {
         $id = filter_var($learning, '/^[0-9a-f]{10}$/');
         $user->learningSkills[] = $taskService->retrieve($id);
