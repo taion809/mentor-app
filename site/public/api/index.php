@@ -13,7 +13,7 @@ $app->db = new \PDO(
     $config['database'][$config['environment']]['password']
 );
 
-$app->get('/v1/user/:id', function() use ($app) {
+$app->get('/v1/user/:id', function($id) use ($app) {
     // add authentication, authz shouldn't matter here
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
@@ -29,9 +29,9 @@ $app->get('/v1/user/:id', function() use ($app) {
         http_response_code(404);
         return;
     }
-    $userSerializer = new UserArraySerializer();
-    $skillSerializer = new SkillArraySerializer();
-    $partnershipSerializer = new PartnershipArraySerializer();
+    $userSerializer = new \MentorApp\UserArraySerializer();
+    $skillSerializer = new \MentorApp\SkillArraySerializer();
+    $partnershipSerializer = new \MentorApp\PartnershipArraySerializer();
     $response = $userSerializer->toArray($userResponse);
 
     // retrieve skill instances for the skill ids provided for teaching
@@ -54,7 +54,7 @@ $app->get('/v1/user/:id', function() use ($app) {
     print json_encode($response); 
 });
 
-$app->delete('/v1/user/:id', function() use ($app) {
+$app->delete('/v1/user/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
         http_response_code(404);
@@ -69,7 +69,7 @@ $app->delete('/v1/user/:id', function() use ($app) {
     http_response_code(200);
 });
 
-$app->post('/v1/user', function use ($app) {
+$app->post('/v1/user', function() use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
     $taskService = new \MentorApp\SkillService($app->db);
@@ -106,7 +106,7 @@ $app->post('/v1/user', function use ($app) {
     // response should include URI to resource
 });        
 
-$app->put('/vi/user', function use ($app) {
+$app->put('/vi/user', function() use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
     $taskService = new \MentorApp\SkillService($app->db);
