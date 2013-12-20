@@ -43,7 +43,7 @@ apache::vhost { 'default':
   docroot       => '/var/www/public/',
   port          => '80',
   env_variables => [
-    'APP_ENV dev'
+    'APP_ENV development'
   ],
   priority      => '',
 }
@@ -118,7 +118,7 @@ puphpet::ini { 'custom':
 
 
 class { 'mysql::server':
-  config_hash   => { 'root_password' => 'root' }
+  config_hash   => { 'root_password' => 'root', 'bind_address' => '0.0.0.0' }
 }
 
 mysql::db { 'mentor':
@@ -127,7 +127,7 @@ mysql::db { 'mentor':
   ],
   user     => 'mentor',
   password => 'mentor',
-  host     => 'localhost',
+  host     => '%',
   charset  => 'utf8',
   require  => Class['mysql::server'],
 }
