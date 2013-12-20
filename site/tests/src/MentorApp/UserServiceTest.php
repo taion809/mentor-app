@@ -53,6 +53,9 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'abc123def4';
         $this->mockData['id'] = $id;
+        $this->mockData['first_name'] = 'Mike';
+        $this->mockData['last_name'] = 'Jones';
+        $this->mockData['email'] = 'mikejones@who.com';
         $expectedQuery = "SELECT id, first_name, last_name, email, github_handle, irc_nick, ";
         $expectedQuery .= "twitter_handle, mentor_available, apprentice_available, ";
         $expectedQuery .= "timezone FROM user WHERE id = :id";
@@ -84,10 +87,14 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->mockData));
 
         $this->statement->expects($this->at(2))
+            ->method('rowCount')
+            ->will($this->returnValue(1));
+
+        $this->statement->expects($this->at(3))
             ->method('fetch')
             ->will($this->returnValue(array('id_tag' => 'skill')));
 
-        $this->statement->expects($this->at(3))
+        $this->statement->expects($this->at(4))
             ->method('fetch')
             ->will($this->returnValue(array('id_tag' => 'skill')));
     
@@ -388,5 +395,38 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $userService->setMapping($mapping);
         $retrieved = $userService->getMapping();
         $this->assertSame($mapping, $retrieved);
+    }
+
+    /**
+     * test to ensure that if no records come back in retrieve
+     * that null is returned
+     */
+    public function testNullIsReturnedIfNoResultsAreFound()
+    {
+        $id = '1bcde23bcd';
+        $expectedQuery = "SELECT id, first_name, last_name, email, github_handle, irc_nick, ";
+        $expectedQuery .= "twitter_handle, mentor_available, apprentice_available, ";
+        $expectedQuery .= "timezone FROM user WHERE id = :id";
+
+        $this->db->expects($this->once())
+            ->method('prepare')
+            ->with($expectedQuery)
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->at(0))
+            ->method('execute')
+            ->with(['id' => $id])
+            ->will($this->returnValue($this->statement));
+
+        $this->statement->expects($this->at(1))
+            ->method('fetch');
+
+        $this->statement->expects($this->at(2))
+            ->method('rowCount')
+            ->will($this->returnValue(0));
+
+        $userService = new UserService($this->db);
+        $user = $userService->retrieve($id);
+        $this->assertNull($user);
     }
 }
