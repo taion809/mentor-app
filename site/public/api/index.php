@@ -139,5 +139,72 @@ $app->put('/vi/user', function() use ($app) {
     }
     http_response_code(200);
 });
- 
+
+$app->get('/v1/skill/:id', function($id) use $app {
+    $hashValidator = new \MentorApp\HashValidator();
+    if (!$hashValidator->validate($id)) {
+        http_response_code(404);
+        return;
+    }
+    $skillService = new \MentorApp\SkillService($app->db);
+    $skillSerializer = new \MentorApp\SkillArraySerializer();
+    $skill = $skillService->retrieve($id);
+    $skillArray = $skillSerializer->toArray($skill);
+    if ($skill === null) {
+        http_response_code(404);
+        return;
+    }
+    http_response_code(200);
+    print json_encode($skillArray);    
+});
+
+$app->delete('/v1/skill/:id', function($id) use $app {
+    $hashValidator = new \MentorApp\HashValidator();
+    if (!$hashValidator->validate($id)) {
+        http_response_code(404);
+        return;
+    }
+    $skillService = new \MentorApp\SkillService($app->db);
+    if (!$skillService->delete($id)) {
+        http_response_code(404);
+        return;
+    }
+    http_response_code(200);
+});
+
+$app->post('/v1/skill', function() use $app {
+    $skillService = new \MentorApp\SkillService($app->db);
+    $body = $app->getRequest()->getBody();
+    $skillArray = json_decode($body, true);
+    $skill = new \MentorApp\Skill();
+    ($skillArray['name'] !== null) ? $skill->name = htmlspecialchars($skillArray['name']) : $skill->name = null;
+    ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
+    ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null;
+    if (!$skillService->save($skill)) {
+        http_response_code(400);
+        return;
+    }
+    http_reponse_code(201);
+});
+
+$app->put('/v1/skill', function() use $app {
+    $hashValidator = new \MentorApp\HashValidator();
+    $skillService = new \MentorApp\SkillService($app->db);
+    $body = $app->getRequest()->getBody();
+    $skillArray = json_decode($body, true);
+    $skill = new \MentorApp\Skill();
+    ($skillArray['id'] !== null) ? $skill->id = htmlspecialchars($skillArray['id']) : $skill->id = null;
+    ($skillArray['name'] !== null) ? $skill->name = htmlspecialchars($skillArray['name']) : $skill->name = null;
+    ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
+    ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null; 
+    if (!$hashValidator->validate($skill->id)) {
+        http_response_code(400);
+        return;
+    }
+    if (!$skillService->save($skill)) {
+        http_response_code(400);
+        return;
+    }
+    http_response_code(200);
+});
 $app->run();
