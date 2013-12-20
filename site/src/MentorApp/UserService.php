@@ -74,7 +74,9 @@ class UserService
             $statement = $this->db->prepare($query);
             $statement->execute(array('id' => $id));
             $userData = $statement->fetch();
-
+            if ($statement->rowCount() < 1) {
+                return null;
+            }
             $user = new User();
             foreach ($this->mapping as $property => $dbColumnName) {
                 $user->$property = htmlentities($userData[$dbColumnName]);
