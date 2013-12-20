@@ -53,6 +53,9 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
     {
         $id = 'abc123def4';
         $this->mockData['id'] = $id;
+        $this->mockData['first_name'] = 'Mike';
+        $this->mockData['last_name'] = 'Jones';
+        $this->mockData['email'] = 'mikejones@who.com';
         $expectedQuery = "SELECT id, first_name, last_name, email, github_handle, irc_nick, ";
         $expectedQuery .= "twitter_handle, mentor_available, apprentice_available, ";
         $expectedQuery .= "timezone FROM user WHERE id = :id";
@@ -84,10 +87,14 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($this->mockData));
 
         $this->statement->expects($this->at(2))
+            ->method('rowCount')
+            ->will($this->returnValue(1));
+
+        $this->statement->expects($this->at(3))
             ->method('fetch')
             ->will($this->returnValue(array('id_tag' => 'skill')));
 
-        $this->statement->expects($this->at(3))
+        $this->statement->expects($this->at(4))
             ->method('fetch')
             ->will($this->returnValue(array('id_tag' => 'skill')));
     
