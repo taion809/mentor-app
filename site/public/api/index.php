@@ -88,7 +88,7 @@ $app->post('/v1/user', function() use ($app) {
     $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
     foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
-        $user->teachingSkills[] = $skillskillskillskillskillService->retrieve($id);
+        $user->teachingSkills[] = $skillService->retrieve($id);
     }
 
     foreach ($dataArray['learning_skills'] as $learning)
@@ -124,13 +124,13 @@ $app->put('/v1/user', function() use ($app) {
     $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
     foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
-        $user->teachingSkills[] = $skillskillService->retrieve($id);
+        $user->teachingSkills[] = $skillService->retrieve($id);
     }
 
     foreach ($dataArray['learning_skills'] as $learning)
     {
         $id = filter_var($learning, '/^[0-9a-f]{10}$/');
-        $user->learningSkills[] = $skillskillskillService->retrieve($id);
+        $user->learningSkills[] = $skillService->retrieve($id);
     } 
 
     $savedUser = $userService->update($user);
