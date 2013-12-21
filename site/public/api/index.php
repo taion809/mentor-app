@@ -17,7 +17,7 @@ $app->get('/v1/user/:id', function($id) use ($app) {
     // add authentication, authz shouldn't matter here
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        http_response_code(404);
+        $app->response->setStatus(404);
         return;
     }
     $response = array();
@@ -26,7 +26,7 @@ $app->get('/v1/user/:id', function($id) use ($app) {
     $skillService = new \MentorApp\SkillService($app->db);
     $partnershipManager = new \MentorApp\PartnershipManager($app->db);
     if ($userResponse === null) {
-        http_response_code(404);
+        $app->response->setStatus(404);
         return;
     }
     $userSerializer = new \MentorApp\UserArraySerializer();
@@ -50,30 +50,30 @@ $app->get('/v1/user/:id', function($id) use ($app) {
     $response['partnerships']['mentoring'] = $partnershipSerializer->fromArray($mentorships);
     $response['partnerships']['apprencting'] = $partnershipSerializer->fromArray($apprenticeships); 
 
-    http_response_code(200); 
+    $app->response->setStatus(200);
     print json_encode($response); 
 });
 
 $app->delete('/v1/user/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        http_response_code(404);
+        $app->response->setStatus(404);
         return;
     }
     $userService = new \MentorApp\UserService($app->db);
 
     if (!$userService->delete($id)) {
-        http_response_code(404);
+        $app->response->setStatus(404);
         return;
     }
-    http_response_code(200);
+    $app->response->setStatus(200);
 });
 
 $app->post('/v1/user', function() use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
-    $taskService = new \MentorApp\SkillService($app->db);
-    $data = $app->getRequest()->getBody();
+    $skillService = new \MentorApp\SkillService($app->db);
+    $data = $app->request->getBody();
     $dataArray = json_decode($data, true);
     $user->firstName = filter_var($dataArray['first_name'], FILTER_SANITIZE_STRING);
     $user->lastName = filter_var($dataArray['last_name'], FILTER_SANITIZE_STRING);
@@ -88,29 +88,29 @@ $app->post('/v1/user', function() use ($app) {
     $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
     foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
-        $user->teachingSkills[] = $taskService->retrieve($id);
+        $user->teachingSkills[] = $skillskillskillskillskillService->retrieve($id);
     }
 
     foreach ($dataArray['learning_skills'] as $learning)
     {
         $id = filter_var($learning, '/^[0-9a-f]{10}$/');
-        $user->learningSkills[] = $taskService->retrieve($id);
+        $user->learningSkills[] = $skillService->retrieve($id);
     } 
 
     $savedUser = $userService->create($user);
     if (!$savedUser) {
-        http_response_code(400);
+        $app->response->setStatus(400);
     }
-    http_response_code(201);
-
-    // response should include URI to resource
+    $app->response->setStatus(201);
 });        
 
-$app->put('/vi/user', function() use ($app) {
+$app->put('/v1/user', function() use ($app) {
     $user = new \MentorApp\User();
     $userService = new \MentorApp\UserService($app->db);
-    $taskService = new \MentorApp\SkillService($app->db);
-    $data = $app->getRequest()->getBody();
+    $skillService = new \MentorApp\SkillService($app->db);
+    $data = $app->request->getBody();
+    $dataArray = json_decode($data, true);
+    $user->id = filter_var($dataArray['id'], FILTER_SANITIZE_STRING);
     $user->firstName = filter_var($dataArray['first_name'], FILTER_SANITIZE_STRING);
     $user->lastName = filter_var($dataArray['last_name'], FILTER_SANITIZE_STRING);
     $user->email = filter_var($dataArray['email'], FILTER_SANITIZE_EMAIL);
@@ -124,26 +124,26 @@ $app->put('/vi/user', function() use ($app) {
     $user->timezone = filter_var($dataArray['timezone'], FILTER_SANITIZE_STRING);
     foreach ($dataArray['teaching_skills'] as $teaching) {
         $id = filter_var($teaching, '/^[0-9a-f]{10}$/');
-        $user->teachingSkills[] = $taskService->retrieve($id);
+        $user->teachingSkills[] = $skillskillService->retrieve($id);
     }
 
     foreach ($dataArray['learning_skills'] as $learning)
     {
         $id = filter_var($learning, '/^[0-9a-f]{10}$/');
-        $user->learningSkills[] = $taskService->retrieve($id);
+        $user->learningSkills[] = $skillskillskillService->retrieve($id);
     } 
 
     $savedUser = $userService->update($user);
     if (!$savedUser) {
-        http_response_code(400);
+        $app->response->setStatus(400);
     }
-    http_response_code(200);
+    $app->response->setStatus(200);
 });
 
-$app->get('/v1/skill/:id', function($id) use $app {
+$app->get('/v1/skill/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        http_response_code(404);
+        $app->request->setStatus(404);
         return;
     }
     $skillService = new \MentorApp\SkillService($app->db);
@@ -151,46 +151,46 @@ $app->get('/v1/skill/:id', function($id) use $app {
     $skill = $skillService->retrieve($id);
     $skillArray = $skillSerializer->toArray($skill);
     if ($skill === null) {
-        http_response_code(404);
+        $app->request->setStatus(404);
         return;
     }
-    http_response_code(200);
+    $app->request->setStatus(200);
     print json_encode($skillArray);    
 });
 
-$app->delete('/v1/skill/:id', function($id) use $app {
+$app->delete('/v1/skill/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        http_response_code(404);
+        $app->request->setStatus(404);
         return;
     }
     $skillService = new \MentorApp\SkillService($app->db);
     if (!$skillService->delete($id)) {
-        http_response_code(404);
+        $app->response->setStatus(404);
         return;
     }
-    http_response_code(200);
+    $app->response->setStatus(200);
 });
 
-$app->post('/v1/skill', function() use $app {
+$app->post('/v1/skill', function() use ($app)  {
     $skillService = new \MentorApp\SkillService($app->db);
-    $body = $app->getRequest()->getBody();
+    $body = $app->request->getBody();
     $skillArray = json_decode($body, true);
     $skill = new \MentorApp\Skill();
     ($skillArray['name'] !== null) ? $skill->name = htmlspecialchars($skillArray['name']) : $skill->name = null;
     ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
     ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null;
     if (!$skillService->save($skill)) {
-        http_response_code(400);
+        $app->request->setStatus(400);
         return;
     }
     http_reponse_code(201);
 });
 
-$app->put('/v1/skill', function() use $app {
+$app->put('/v1/skill', function() use ($app)   {
     $hashValidator = new \MentorApp\HashValidator();
     $skillService = new \MentorApp\SkillService($app->db);
-    $body = $app->getRequest()->getBody();
+    $body = $app->request->getBody();
     $skillArray = json_decode($body, true);
     $skill = new \MentorApp\Skill();
     ($skillArray['id'] !== null) ? $skill->id = htmlspecialchars($skillArray['id']) : $skill->id = null;
@@ -198,13 +198,13 @@ $app->put('/v1/skill', function() use $app {
     ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
     ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null; 
     if (!$hashValidator->validate($skill->id)) {
-        http_response_code(400);
+        $app->request->setStatus(400);
         return;
     }
     if (!$skillService->save($skill)) {
-        http_response_code(400);
+        $app->request->setStatus(400);
         return;
     }
-    http_response_code(200);
+    $app->request->setStatus(200);
 });
 $app->run();
