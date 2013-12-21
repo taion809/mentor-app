@@ -173,7 +173,7 @@ class UserService
             $statement = $this->db->prepare($deleteQuery);
             $statement->execute(array('id' => $id));
             $this->deleteSkills($id);
-            if ($statement->rowCount < 1) {
+            if ($statement->rowCount() < 1) {
                 return false;
             }
         } catch (\PDOException $e) {
