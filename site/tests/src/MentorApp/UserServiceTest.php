@@ -266,6 +266,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
 
         //build the array for the execute method
         $valueArray = array();
+        $valueArray['id'] = $user->id;
         $valueArray['first_name'] = $user->firstName;
         $valueArray['last_name'] = $user->lastName;
         $valueArray['email'] = $user->email;
@@ -277,7 +278,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $valueArray['timezone'] = $user->timezone;
 
         // build the expected query for user
-        $expectedQuery = "UPDATE user SET first_name=:first_name, last_name=:last_name, ";
+        $expectedQuery = "UPDATE user SET id=:id, first_name=:first_name, last_name=:last_name, ";
         $expectedQuery .= "email=:email, github_handle=:github_handle, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
         $expectedQuery .= "mentor_available=:mentor_available, apprentice_available=:apprentice_available, ";
         $expectedQuery .= "timezone=:timezone WHERE id=:id";
@@ -334,6 +335,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
 
         //build the array for the execute method
         $valueArray = array();
+        $valueArray['id'] = $user->id;
         $valueArray['first_name'] = $user->firstName;
         $valueArray['last_name'] = $user->lastName;
         $valueArray['email'] = $user->email;
@@ -345,7 +347,7 @@ class UserServiceTest extends \PHPUnit_Framework_TestCase
         $valueArray['timezone'] = $user->timezone;
 
         // build the expected query for user
-        $expectedQuery = "UPDATE user SET first_name=:first_name, last_name=:last_name, ";
+        $expectedQuery = "UPDATE user SET id=:id, first_name=:first_name, last_name=:last_name, ";
         $expectedQuery .= "email=:email, github_handle=:github_handle, irc_nick=:irc_nick, twitter_handle=:twitter_handle, ";
         $expectedQuery .= "mentor_available=:mentor_available, apprentice_available=:apprentice_available, ";
         $expectedQuery .= "timezone=:timezone WHERE id=:id";

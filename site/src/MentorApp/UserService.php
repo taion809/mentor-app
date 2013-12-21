@@ -110,6 +110,7 @@ class UserService
             $statementValues[$field] = $user->$key;
         }
         $query = 'INSERT INTO user (' . $fields . ') VALUES (' . substr($valueKeys, 0, -2) . ')';
+
         try {
             $statement = $this->db->prepare($query);
             $statement->execute($statementValues);
@@ -135,9 +136,7 @@ class UserService
     {
         $updateConditions = '';
         $updateValues = array();
-        // unset the id from the mapping so we don't update the id
         $mapping = $this->mapping;
-        unset($mapping['id']);
         foreach ($mapping as $property => $field) {
             $updateConditions .= $field . '=:' . $field . ', ';
             $updateValues[$field] = $user->$property;
@@ -172,10 +171,10 @@ class UserService
         try {
             $statement = $this->db->prepare($deleteQuery);
             $statement->execute(array('id' => $id));
-            $this->deleteSkills($id);
-            if ($statement->rowCount < 1) {
+            if ($statement->rowCount() < 1) {
                 return false;
             }
+            $this->deleteSkills($id);
         } catch (\PDOException $e) {
             // log it
         }
