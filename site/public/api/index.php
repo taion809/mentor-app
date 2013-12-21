@@ -143,7 +143,7 @@ $app->put('/v1/user', function() use ($app) {
 $app->get('/v1/skill/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        $app->request->setStatus(404);
+        $app->response->setStatus(404);
         return;
     }
     $skillService = new \MentorApp\SkillService($app->db);
@@ -151,17 +151,17 @@ $app->get('/v1/skill/:id', function($id) use ($app) {
     $skill = $skillService->retrieve($id);
     $skillArray = $skillSerializer->toArray($skill);
     if ($skill === null) {
-        $app->request->setStatus(404);
+        $app->response->setStatus(404);
         return;
     }
-    $app->request->setStatus(200);
+    $app->response->setStatus(200);
     print json_encode($skillArray);    
 });
 
 $app->delete('/v1/skill/:id', function($id) use ($app) {
     $hashValidator = new \MentorApp\HashValidator();
     if (!$hashValidator->validate($id)) {
-        $app->request->setStatus(404);
+        $app->response->setStatus(404);
         return;
     }
     $skillService = new \MentorApp\SkillService($app->db);
@@ -181,7 +181,7 @@ $app->post('/v1/skill', function() use ($app)  {
     ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
     ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null;
     if (!$skillService->save($skill)) {
-        $app->request->setStatus(400);
+        $app->response->setStatus(400);
         return;
     }
     http_reponse_code(201);
@@ -198,13 +198,13 @@ $app->put('/v1/skill', function() use ($app)   {
     ($skillArray['added'] !== null) ? $skill->added = htmlspecialchars($skillArray['added']) : $skill->added = null;
     ($skillArray['authorized'] !== null) ? $skill->authorized = htmlspecialchars($skillArray['authorized']) : $skill->authorized = null; 
     if (!$hashValidator->validate($skill->id)) {
-        $app->request->setStatus(400);
+        $app->response->setStatus(400);
         return;
     }
     if (!$skillService->save($skill)) {
-        $app->request->setStatus(400);
+        $app->response->setStatus(400);
         return;
     }
-    $app->request->setStatus(200);
+    $app->response->setStatus(200);
 });
 $app->run();
